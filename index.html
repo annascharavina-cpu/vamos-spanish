@@ -1,0 +1,2766 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>¡Vamos! — Карточки испанского</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,800;9..144,900&family=DM+Mono:wght@400;500&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #FFF8EC;
+    --ink: #1A1816;
+    --paper: #FFFFFF;
+    --terracotta: #E85D3C;
+    --mustard: #F4B942;
+    --olive: #6B7F3A;
+    --plum: #6B3FA0;
+    --sky: #4A90B8;
+    --pink: #F4A8A0;
+    --cream: #F5EBD6;
+    --border: #1A1816;
+    --shadow: 6px 6px 0 0 #1A1816;
+    --shadow-sm: 3px 3px 0 0 #1A1816;
+    --shadow-lg: 10px 10px 0 0 #1A1816;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html, body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: 'Outfit', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Decorative background grid */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      radial-gradient(circle, rgba(26,24,22,0.06) 1px, transparent 1px);
+    background-size: 24px 24px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .app {
+    position: relative;
+    z-index: 1;
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 32px 40px 80px;
+  }
+
+  /* ============ HEADER ============ */
+  .header {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 24px;
+    padding-bottom: 28px;
+    border-bottom: 3px solid var(--ink);
+    margin-bottom: 36px;
+  }
+
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .brand-mark {
+    width: 64px;
+    height: 64px;
+    background: var(--terracotta);
+    border: 3px solid var(--ink);
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    font-family: 'Fraunces', serif;
+    font-weight: 900;
+    font-size: 32px;
+    color: var(--bg);
+    box-shadow: var(--shadow-sm);
+    transform: rotate(-6deg);
+  }
+
+  .brand h1 {
+    font-family: 'Fraunces', serif;
+    font-weight: 900;
+    font-size: 44px;
+    letter-spacing: -0.02em;
+    line-height: 1;
+  }
+  .brand h1 em {
+    color: var(--terracotta);
+    font-style: italic;
+    font-weight: 900;
+  }
+  .brand p {
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    color: var(--ink);
+    opacity: 0.6;
+    margin-top: 4px;
+  }
+
+  .header-stats {
+    display: flex;
+    gap: 12px;
+  }
+
+  .stat-pill {
+    background: var(--paper);
+    border: 2px solid var(--ink);
+    border-radius: 999px;
+    padding: 10px 18px;
+    box-shadow: var(--shadow-sm);
+    font-family: 'DM Mono', monospace;
+    font-size: 13px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .stat-pill strong {
+    font-family: 'Fraunces', serif;
+    font-size: 20px;
+    font-weight: 800;
+  }
+  .stat-pill.terracotta { background: var(--terracotta); color: var(--bg); }
+  .stat-pill.mustard { background: var(--mustard); }
+  .stat-pill.olive { background: var(--olive); color: var(--bg); }
+
+  /* ============ TABS ============ */
+  .tabs {
+    display: flex;
+    gap: 0;
+    margin-bottom: 32px;
+    border-bottom: 3px solid var(--ink);
+  }
+  .tab {
+    background: transparent;
+    border: none;
+    border: 3px solid var(--ink);
+    border-bottom: none;
+    border-radius: 12px 12px 0 0;
+    padding: 14px 28px;
+    font-family: 'Outfit', sans-serif;
+    font-weight: 600;
+    font-size: 15px;
+    cursor: pointer;
+    margin-right: -3px;
+    margin-bottom: -3px;
+    background: var(--cream);
+    color: var(--ink);
+    transition: all 0.15s;
+    position: relative;
+  }
+  .tab:hover { background: var(--paper); }
+  .tab.active {
+    background: var(--ink);
+    color: var(--bg);
+    z-index: 2;
+  }
+  .tab .count {
+    display: inline-block;
+    margin-left: 8px;
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    background: var(--bg);
+    color: var(--ink);
+    padding: 2px 8px;
+    border-radius: 999px;
+  }
+  .tab.active .count {
+    background: var(--terracotta);
+    color: var(--bg);
+  }
+
+  /* ============ VIEW WRAPPER ============ */
+  .view { display: none; }
+  .view.active { display: block; }
+
+  /* ============ STUDY VIEW ============ */
+  .study-controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 32px;
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+  .study-controls h2 {
+    font-family: 'Fraunces', serif;
+    font-size: 28px;
+    font-weight: 800;
+  }
+  .study-controls .progress-info {
+    font-family: 'DM Mono', monospace;
+    font-size: 13px;
+    background: var(--paper);
+    border: 2px solid var(--ink);
+    padding: 8px 16px;
+    border-radius: 999px;
+  }
+
+  .card-stage {
+    display: grid;
+    place-items: center;
+    min-height: 460px;
+    padding: 20px 0;
+    position: relative;
+  }
+
+  .flashcard {
+    width: min(560px, 100%);
+    height: 360px;
+    perspective: 1200px;
+    cursor: pointer;
+    position: relative;
+  }
+  .flashcard-inner {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    transform-style: preserve-3d;
+  }
+  .flashcard.flipped .flashcard-inner {
+    transform: rotateY(180deg);
+  }
+  .flashcard.swipe-right .flashcard-inner {
+    transform: translateX(120%) rotate(15deg);
+    transition: transform 0.5s ease-in;
+    opacity: 0;
+  }
+  .flashcard.swipe-left .flashcard-inner {
+    transform: translateX(-120%) rotate(-15deg);
+    transition: transform 0.5s ease-in;
+    opacity: 0;
+  }
+
+  .face {
+    position: absolute;
+    inset: 0;
+    border: 4px solid var(--ink);
+    border-radius: 24px;
+    box-shadow: var(--shadow-lg);
+    padding: 40px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    backface-visibility: hidden;
+    overflow: hidden;
+  }
+  .face::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%;
+    height: 36px;
+    border-bottom: 3px solid var(--ink);
+    background: var(--ink);
+    display: flex;
+  }
+  .face-tag {
+    position: absolute;
+    top: 8px;
+    left: 20px;
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--bg);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    z-index: 2;
+  }
+  .face-num {
+    position: absolute;
+    top: 8px;
+    right: 20px;
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--bg);
+    z-index: 2;
+  }
+
+  .face.front { background: var(--cream); }
+  .face.back {
+    background: var(--terracotta);
+    color: var(--bg);
+    transform: rotateY(180deg);
+  }
+  .face.back::before { background: var(--bg); }
+  .face.back .face-tag, .face.back .face-num { color: var(--ink); }
+
+  .word {
+    font-family: 'Fraunces', serif;
+    font-size: 56px;
+    font-weight: 800;
+    line-height: 1.05;
+    text-align: center;
+    letter-spacing: -0.02em;
+    margin-top: 20px;
+  }
+  .face.back .word { font-style: italic; }
+
+  .word-meta {
+    margin-top: 16px;
+    font-family: 'DM Mono', monospace;
+    font-size: 14px;
+    opacity: 0.75;
+    text-align: center;
+  }
+
+  .flip-hint {
+    position: absolute;
+    bottom: 20px;
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    opacity: 0.5;
+  }
+
+  /* Answer buttons */
+  .answer-row {
+    display: flex;
+    gap: 24px;
+    justify-content: center;
+    margin-top: 36px;
+  }
+  .answer-btn {
+    width: 88px;
+    height: 88px;
+    border-radius: 50%;
+    border: 4px solid var(--ink);
+    cursor: pointer;
+    font-size: 36px;
+    font-weight: 900;
+    display: grid;
+    place-items: center;
+    transition: transform 0.15s, box-shadow 0.15s;
+    box-shadow: var(--shadow);
+    font-family: 'Fraunces', serif;
+  }
+  .answer-btn:hover:not(:disabled) {
+    transform: translate(-2px, -2px);
+    box-shadow: 8px 8px 0 0 var(--ink);
+  }
+  .answer-btn:active:not(:disabled) {
+    transform: translate(2px, 2px);
+    box-shadow: 2px 2px 0 0 var(--ink);
+  }
+  .answer-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+  .answer-btn.correct { background: #7DCE82; color: var(--ink); }
+  .answer-btn.wrong { background: var(--terracotta); color: var(--bg); }
+
+  .answer-label {
+    text-align: center;
+    margin-top: 12px;
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    opacity: 0.6;
+  }
+
+  .session-end {
+    text-align: center;
+    padding: 60px 20px;
+    background: var(--cream);
+    border: 3px solid var(--ink);
+    border-radius: 24px;
+    box-shadow: var(--shadow-lg);
+    max-width: 560px;
+    margin: 0 auto;
+  }
+  .session-end h2 {
+    font-family: 'Fraunces', serif;
+    font-size: 48px;
+    font-weight: 900;
+    margin-bottom: 12px;
+  }
+  .session-end h2 em {
+    color: var(--terracotta);
+    font-style: italic;
+  }
+  .session-end p {
+    font-family: 'DM Mono', monospace;
+    font-size: 14px;
+    margin-bottom: 24px;
+  }
+  .session-end .results {
+    display: flex;
+    gap: 24px;
+    justify-content: center;
+    margin: 28px 0;
+  }
+  .result-box {
+    padding: 16px 28px;
+    border: 3px solid var(--ink);
+    border-radius: 16px;
+    box-shadow: var(--shadow-sm);
+  }
+  .result-box .num {
+    font-family: 'Fraunces', serif;
+    font-size: 40px;
+    font-weight: 900;
+    line-height: 1;
+  }
+  .result-box .label {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    margin-top: 4px;
+  }
+  .result-box.good { background: #7DCE82; }
+  .result-box.bad { background: var(--terracotta); color: var(--bg); }
+
+  .empty-state {
+    text-align: center;
+    padding: 80px 20px;
+    background: var(--paper);
+    border: 3px dashed var(--ink);
+    border-radius: 24px;
+  }
+  .empty-state h3 {
+    font-family: 'Fraunces', serif;
+    font-size: 32px;
+    font-weight: 800;
+    margin-bottom: 8px;
+  }
+  .empty-state p {
+    font-family: 'DM Mono', monospace;
+    font-size: 13px;
+    opacity: 0.7;
+    margin-bottom: 24px;
+  }
+
+  /* ============ BUTTONS ============ */
+  .btn {
+    background: var(--ink);
+    color: var(--bg);
+    border: 3px solid var(--ink);
+    padding: 12px 24px;
+    font-family: 'Outfit', sans-serif;
+    font-weight: 700;
+    font-size: 14px;
+    cursor: pointer;
+    border-radius: 12px;
+    box-shadow: var(--shadow-sm);
+    transition: transform 0.15s, box-shadow 0.15s;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+  .btn:hover {
+    transform: translate(-2px, -2px);
+    box-shadow: 5px 5px 0 0 var(--ink);
+  }
+  .btn:active {
+    transform: translate(1px, 1px);
+    box-shadow: 2px 2px 0 0 var(--ink);
+  }
+  .btn.primary { background: var(--terracotta); color: var(--bg); }
+  .btn.secondary { background: var(--mustard); color: var(--ink); }
+  .btn.ghost { background: var(--paper); color: var(--ink); }
+  .btn.small { padding: 8px 16px; font-size: 12px; }
+
+  /* ============ TOPICS VIEW ============ */
+  .topics-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 28px;
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+  .topics-header h2 {
+    font-family: 'Fraunces', serif;
+    font-size: 32px;
+    font-weight: 800;
+  }
+  .topics-actions { display: flex; gap: 12px; flex-wrap: wrap; }
+
+  .topic-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 20px;
+    margin-bottom: 36px;
+  }
+
+  .topic-card {
+    background: var(--paper);
+    border: 3px solid var(--ink);
+    border-radius: 20px;
+    padding: 24px;
+    box-shadow: var(--shadow);
+    position: relative;
+    transition: transform 0.15s;
+  }
+  .topic-card:hover {
+    transform: translate(-3px, -3px);
+    box-shadow: 9px 9px 0 0 var(--ink);
+  }
+  .topic-card.selected {
+    background: var(--mustard);
+  }
+
+  .topic-card-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 16px;
+  }
+  .topic-checkbox {
+    width: 28px;
+    height: 28px;
+    border: 3px solid var(--ink);
+    border-radius: 8px;
+    cursor: pointer;
+    display: grid;
+    place-items: center;
+    background: var(--paper);
+    font-weight: 900;
+    font-size: 18px;
+    color: transparent;
+  }
+  .topic-card.selected .topic-checkbox {
+    background: var(--ink);
+    color: var(--mustard);
+  }
+  .topic-emoji {
+    font-size: 32px;
+    line-height: 1;
+  }
+  .topic-name {
+    font-family: 'Fraunces', serif;
+    font-size: 22px;
+    font-weight: 800;
+    margin-bottom: 4px;
+    line-height: 1.1;
+  }
+  .topic-meta {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    opacity: 0.6;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 16px;
+  }
+
+  .topic-progress {
+    height: 8px;
+    background: var(--cream);
+    border: 2px solid var(--ink);
+    border-radius: 999px;
+    overflow: hidden;
+    margin-bottom: 12px;
+  }
+  .topic-card.selected .topic-progress { background: var(--paper); }
+  .topic-progress-fill {
+    height: 100%;
+    background: var(--olive);
+    transition: width 0.4s;
+  }
+
+  .topic-stats {
+    display: flex;
+    gap: 8px;
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    flex-wrap: wrap;
+  }
+  .topic-stat {
+    padding: 4px 10px;
+    border: 2px solid var(--ink);
+    border-radius: 999px;
+    background: var(--bg);
+  }
+  .topic-stat.struggling {
+    background: var(--terracotta);
+    color: var(--bg);
+  }
+
+  .topic-card-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 16px;
+    padding-top: 16px;
+    border-top: 2px dashed var(--ink);
+  }
+
+  /* ============ WORDS TABLE ============ */
+  .table-wrap {
+    background: var(--paper);
+    border: 3px solid var(--ink);
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: var(--shadow);
+  }
+  .table-head {
+    padding: 20px 24px;
+    background: var(--ink);
+    color: var(--bg);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  .table-head h3 {
+    font-family: 'Fraunces', serif;
+    font-size: 22px;
+    font-weight: 800;
+  }
+  .table-search {
+    background: var(--bg);
+    color: var(--ink);
+    border: 2px solid var(--bg);
+    padding: 8px 16px;
+    border-radius: 999px;
+    font-family: 'DM Mono', monospace;
+    font-size: 13px;
+    width: 240px;
+  }
+  .table-search::placeholder { color: var(--ink); opacity: 0.5; }
+
+  .filter-row {
+    padding: 16px 24px;
+    background: var(--cream);
+    border-bottom: 2px solid var(--ink);
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+  .filter-chip {
+    padding: 6px 14px;
+    border: 2px solid var(--ink);
+    border-radius: 999px;
+    background: var(--paper);
+    cursor: pointer;
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    transition: all 0.15s;
+  }
+  .filter-chip:hover { background: var(--mustard); }
+  .filter-chip.active { background: var(--ink); color: var(--bg); }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  thead th {
+    background: var(--cream);
+    padding: 14px 16px;
+    text-align: left;
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    border-bottom: 2px solid var(--ink);
+  }
+  tbody td {
+    padding: 14px 16px;
+    border-bottom: 1px solid rgba(26,24,22,0.1);
+    font-size: 15px;
+    vertical-align: middle;
+  }
+  tbody tr:hover { background: var(--cream); }
+  tbody tr.struggling { background: rgba(232, 93, 60, 0.08); }
+  tbody tr.struggling:hover { background: rgba(232, 93, 60, 0.15); }
+
+  .word-cell {
+    font-family: 'Fraunces', serif;
+    font-weight: 600;
+    font-size: 17px;
+  }
+  .word-cell.es { font-style: italic; }
+
+  .badge {
+    display: inline-block;
+    padding: 3px 10px;
+    border: 2px solid var(--ink);
+    border-radius: 999px;
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    background: var(--paper);
+  }
+  .badge.struggling {
+    background: var(--terracotta);
+    color: var(--bg);
+  }
+  .badge.mastered {
+    background: var(--olive);
+    color: var(--bg);
+  }
+  .badge.new { background: var(--mustard); }
+  .badge.familiar {
+    background: var(--sky);
+    color: var(--bg);
+  }
+
+  .row-actions {
+    display: flex;
+    gap: 6px;
+  }
+  .icon-btn {
+    background: var(--paper);
+    border: 2px solid var(--ink);
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    cursor: pointer;
+    display: grid;
+    place-items: center;
+    font-size: 14px;
+  }
+  .icon-btn:hover { background: var(--mustard); }
+  .icon-btn.danger:hover { background: var(--terracotta); color: var(--bg); }
+
+  /* ============ IMPORT VIEW ============ */
+  .import-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 32px;
+  }
+  @media (max-width: 900px) {
+    .import-grid { grid-template-columns: 1fr; }
+  }
+
+  .import-panel {
+    background: var(--paper);
+    border: 3px solid var(--ink);
+    border-radius: 20px;
+    padding: 32px;
+    box-shadow: var(--shadow);
+  }
+  .import-panel h3 {
+    font-family: 'Fraunces', serif;
+    font-size: 24px;
+    font-weight: 800;
+    margin-bottom: 8px;
+  }
+  .import-panel p {
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    opacity: 0.7;
+    margin-bottom: 20px;
+    line-height: 1.5;
+  }
+
+  .file-drop {
+    border: 3px dashed var(--ink);
+    border-radius: 16px;
+    padding: 40px 20px;
+    text-align: center;
+    background: var(--cream);
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+  .file-drop:hover { background: var(--mustard); }
+  .file-drop.dragover { background: var(--mustard); }
+  .file-drop .icon { font-size: 48px; line-height: 1; margin-bottom: 12px; }
+  .file-drop strong {
+    display: block;
+    font-family: 'Fraunces', serif;
+    font-size: 20px;
+    font-weight: 700;
+    margin-bottom: 6px;
+  }
+  .file-drop span {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    opacity: 0.6;
+  }
+
+  .form-field {
+    margin-bottom: 16px;
+  }
+  .form-field label {
+    display: block;
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 6px;
+    font-weight: 500;
+  }
+  .form-field input, .form-field select, .form-field textarea {
+    width: 100%;
+    padding: 12px 14px;
+    border: 2px solid var(--ink);
+    border-radius: 10px;
+    font-family: 'Outfit', sans-serif;
+    font-size: 14px;
+    background: var(--cream);
+  }
+  .form-field input:focus, .form-field select:focus, .form-field textarea:focus {
+    outline: none;
+    background: var(--paper);
+    box-shadow: var(--shadow-sm);
+  }
+  .form-field textarea {
+    min-height: 200px;
+    font-family: 'DM Mono', monospace;
+    font-size: 13px;
+    resize: vertical;
+  }
+
+  .format-example {
+    background: var(--ink);
+    color: var(--bg);
+    padding: 16px;
+    border-radius: 10px;
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    line-height: 1.7;
+    margin-bottom: 16px;
+    white-space: pre;
+    overflow-x: auto;
+  }
+
+  /* ============ MODAL ============ */
+  .modal-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(26,24,22,0.7);
+    display: none;
+    place-items: center;
+    z-index: 100;
+    padding: 20px;
+  }
+  .modal-backdrop.active { display: grid; }
+  .modal {
+    background: var(--bg);
+    border: 3px solid var(--ink);
+    border-radius: 20px;
+    padding: 32px;
+    max-width: 480px;
+    width: 100%;
+    box-shadow: var(--shadow-lg);
+  }
+  .modal h3 {
+    font-family: 'Fraunces', serif;
+    font-size: 24px;
+    font-weight: 800;
+    margin-bottom: 16px;
+  }
+  .modal-actions {
+    display: flex;
+    gap: 12px;
+    justify-content: flex-end;
+    margin-top: 20px;
+  }
+
+  /* ============ TOAST ============ */
+  .toast {
+    position: fixed;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%) translateY(20px);
+    background: var(--ink);
+    color: var(--bg);
+    padding: 12px 24px;
+    border-radius: 999px;
+    font-family: 'DM Mono', monospace;
+    font-size: 13px;
+    box-shadow: var(--shadow);
+    opacity: 0;
+    transition: all 0.3s;
+    z-index: 200;
+    border: 2px solid var(--ink);
+  }
+  .toast.show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+  .toast.success { background: var(--olive); }
+  .toast.error { background: var(--terracotta); }
+
+  /* Settings buttons row */
+  .study-setup {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+    align-items: center;
+    padding: 16px;
+    background: var(--paper);
+    border: 2px solid var(--ink);
+    border-radius: 16px;
+  }
+  .setup-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    opacity: 0.6;
+  }
+  .toggle-group {
+    display: flex;
+    background: var(--cream);
+    border: 2px solid var(--ink);
+    border-radius: 999px;
+    padding: 3px;
+  }
+  .toggle-btn {
+    padding: 6px 14px;
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    border-radius: 999px;
+  }
+  .toggle-btn.active {
+    background: var(--ink);
+    color: var(--bg);
+  }
+
+  .session-config {
+    background: var(--paper);
+    border: 3px solid var(--ink);
+    border-radius: 20px;
+    padding: 24px;
+    margin-bottom: 24px;
+    box-shadow: var(--shadow-sm);
+  }
+  .config-row {
+    display: flex;
+    gap: 16px;
+    align-items: center;
+    flex-wrap: wrap;
+    margin-bottom: 16px;
+  }
+  .config-row:last-child { margin-bottom: 0; }
+  .config-row-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    opacity: 0.7;
+    min-width: 110px;
+  }
+  .include-chip {
+    padding: 8px 14px;
+    border: 2px solid var(--ink);
+    border-radius: 999px;
+    background: var(--cream);
+    cursor: pointer;
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    transition: all 0.15s;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    opacity: 0.55;
+  }
+  .include-chip.included {
+    opacity: 1;
+    background: var(--paper);
+  }
+  .include-chip.included.s-mastered { background: var(--olive); color: var(--bg); }
+  .include-chip.included.s-familiar { background: var(--sky); color: var(--bg); }
+  .include-chip.included.s-new { background: var(--mustard); }
+  .include-chip.included.s-learning { background: var(--pink); }
+  .include-chip.included.s-struggling { background: var(--terracotta); color: var(--bg); }
+  .include-chip:hover { opacity: 1; }
+  .include-chip .count {
+    font-weight: 700;
+    font-size: 11px;
+  }
+
+  /* ============ SYNC / ROOM UI ============ */
+  .sync-bar {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 16px;
+    background: var(--paper);
+    border: 2px solid var(--ink);
+    border-radius: 999px;
+    box-shadow: var(--shadow-sm);
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+  }
+  .sync-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: #999;
+    flex-shrink: 0;
+  }
+  .sync-dot.online { background: #4CAF50; animation: pulse 2s ease-in-out infinite; }
+  .sync-dot.syncing { background: var(--mustard); animation: pulse 1s ease-in-out infinite; }
+  .sync-dot.offline { background: #999; }
+  .sync-dot.error { background: var(--terracotta); }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+  }
+  .sync-bar .room-name {
+    font-weight: 600;
+    color: var(--terracotta);
+  }
+  .sync-bar button {
+    background: var(--ink);
+    color: var(--bg);
+    border: none;
+    padding: 4px 12px;
+    border-radius: 999px;
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    cursor: pointer;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+  .sync-bar button:hover { background: var(--terracotta); }
+
+  /* Room setup modal */
+  .room-modal {
+    max-width: 560px;
+  }
+  .room-modal h2 {
+    font-family: 'Fraunces', serif;
+    font-size: 32px;
+    font-weight: 900;
+    margin-bottom: 8px;
+  }
+  .room-modal h2 em { color: var(--terracotta); font-style: italic; }
+  .room-modal .room-tagline {
+    font-family: 'DM Mono', monospace;
+    font-size: 13px;
+    opacity: 0.7;
+    margin-bottom: 24px;
+    line-height: 1.5;
+  }
+  .room-modal .room-option {
+    background: var(--cream);
+    border: 2px solid var(--ink);
+    border-radius: 16px;
+    padding: 20px;
+    margin-bottom: 16px;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .room-modal .room-option:hover {
+    background: var(--mustard);
+    transform: translate(-2px, -2px);
+    box-shadow: var(--shadow-sm);
+  }
+  .room-modal .room-option h4 {
+    font-family: 'Fraunces', serif;
+    font-size: 20px;
+    font-weight: 800;
+    margin-bottom: 6px;
+  }
+  .room-modal .room-option p {
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    opacity: 0.7;
+    margin: 0;
+  }
+  .room-modal .room-input-wrap {
+    display: flex;
+    gap: 8px;
+    margin-top: 12px;
+  }
+  .room-modal .room-input-wrap input {
+    flex: 1;
+    padding: 10px 14px;
+    border: 2px solid var(--ink);
+    border-radius: 10px;
+    font-family: 'DM Mono', monospace;
+    font-size: 14px;
+    background: var(--paper);
+  }
+
+  .share-banner {
+    background: var(--mustard);
+    border: 2px solid var(--ink);
+    border-radius: 12px;
+    padding: 12px 16px;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+  }
+  .share-banner .share-url {
+    flex: 1;
+    background: var(--bg);
+    border: 2px solid var(--ink);
+    border-radius: 8px;
+    padding: 6px 10px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  /* Decorative elements */
+  .deco-star {
+    position: absolute;
+    pointer-events: none;
+    opacity: 0.15;
+  }
+
+  @media (max-width: 700px) {
+    .app { padding: 20px; }
+    .brand h1 { font-size: 32px; }
+    .word { font-size: 40px; }
+    .face { padding: 30px 24px; }
+    .header { flex-direction: column; align-items: flex-start; }
+    .import-panel { padding: 24px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="app">
+
+  <!-- ============ HEADER ============ -->
+  <header class="header">
+    <div class="brand">
+      <div class="brand-mark">¡</div>
+      <div>
+        <h1>vamos <em>a</em> aprender</h1>
+        <p>// карточки испанского · personal study lab</p>
+      </div>
+    </div>
+    <div class="header-stats" id="headerStats">
+      <!-- filled by JS -->
+    </div>
+  </header>
+
+  <!-- ============ TABS ============ -->
+  <nav class="tabs">
+    <button class="tab active" data-view="study">Учить <span class="count" id="cntStudy">0</span></button>
+    <button class="tab" data-view="topics">Темы <span class="count" id="cntTopics">0</span></button>
+    <button class="tab" data-view="words">Все слова <span class="count" id="cntWords">0</span></button>
+    <button class="tab" data-view="import">+ Загрузить</button>
+  </nav>
+
+  <!-- Sync bar -->
+  <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 24px; flex-wrap: wrap;">
+    <div class="sync-bar" id="syncBar" style="display: none;">
+      <div class="sync-dot" id="syncDot"></div>
+      <span>Комната: <span class="room-name" id="syncRoomName">—</span></span>
+      <span id="syncStatus" style="opacity: 0.5;">подключение...</span>
+      <button id="copyShareLink">📋 Поделиться</button>
+      <button id="leaveRoom" style="background: var(--terracotta);">Выйти</button>
+    </div>
+    <button class="btn ghost small" id="joinRoomBtn" style="display: none;">🌐 Подключиться к комнате</button>
+  </div>
+
+  <!-- ============ VIEW: STUDY ============ -->
+  <section class="view active" id="view-study">
+    <div id="studyContent"></div>
+  </section>
+
+  <!-- ============ VIEW: TOPICS ============ -->
+  <section class="view" id="view-topics">
+    <div class="topics-header">
+      <h2>Темы для изучения</h2>
+      <div class="topics-actions">
+        <button class="btn ghost small" id="selectAllTopics">Выбрать все</button>
+        <button class="btn ghost small" id="clearAllTopics">Снять выбор</button>
+        <button class="btn primary" id="startSelectedSession">→ Учить выбранное</button>
+      </div>
+    </div>
+    <div class="topic-grid" id="topicGrid"></div>
+  </section>
+
+  <!-- ============ VIEW: WORDS ============ -->
+  <section class="view" id="view-words">
+    <div class="table-wrap">
+      <div class="table-head">
+        <h3>Словарь</h3>
+        <input type="text" class="table-search" id="wordSearch" placeholder="поиск по слову или переводу...">
+      </div>
+      <div class="filter-row">
+        <span class="setup-label">Фильтр:</span>
+        <button class="filter-chip active" data-filter="all">Все</button>
+        <button class="filter-chip" data-filter="struggling">⚠ Сложные</button>
+        <button class="filter-chip" data-filter="familiar">◐ Знакомо</button>
+        <button class="filter-chip" data-filter="mastered">✓ Выучены</button>
+        <button class="filter-chip" data-filter="new">⊙ Новые</button>
+        <span style="margin-left:auto" class="setup-label" id="rowCount"></span>
+      </div>
+      <div style="overflow-x: auto;">
+        <table id="wordsTable">
+          <thead>
+            <tr>
+              <th style="width: 30px;">#</th>
+              <th>Русский</th>
+              <th>Español</th>
+              <th>Тема</th>
+              <th>Статус</th>
+              <th style="text-align:center">Ошибок</th>
+              <th style="text-align:center">Подряд ✓</th>
+              <th style="width: 100px;">Действия</th>
+            </tr>
+          </thead>
+          <tbody id="wordsBody"></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ VIEW: IMPORT ============ -->
+  <section class="view" id="view-import">
+    <div class="import-grid">
+      <!-- File upload -->
+      <div class="import-panel">
+        <h3>📁 Загрузить файл</h3>
+        <p>CSV или TSV файл. Колонки: русский, испанский, тема (опционально)</p>
+
+        <div class="format-example">русский,испанский,тема
+дом,casa,Базовое
+кошка,gato,Животные
+быстро,rápido,Наречия</div>
+
+        <div class="file-drop" id="fileDrop">
+          <div class="icon">📤</div>
+          <strong>Перетащите CSV сюда</strong>
+          <span>или нажмите чтобы выбрать файл</span>
+        </div>
+        <input type="file" id="fileInput" accept=".csv,.tsv,.txt" hidden>
+      </div>
+
+      <!-- Paste -->
+      <div class="import-panel">
+        <h3>✏️ Вставить таблицу</h3>
+        <p>Скопируйте из Google Sheets / Excel. Разделители: tab, запятая или точка с запятой</p>
+
+        <div class="form-field">
+          <label>Название темы (если не указано в таблице)</label>
+          <input type="text" id="pasteTopic" placeholder="например: Еда, Глаголы движения...">
+        </div>
+
+        <div class="form-field">
+          <label>Эмодзи темы (опционально)</label>
+          <input type="text" id="pasteEmoji" placeholder="🍕" maxlength="2">
+        </div>
+
+        <div class="form-field">
+          <label>Данные</label>
+          <textarea id="pasteArea" placeholder="дом&#9;casa&#10;кошка&#9;gato&#10;..."></textarea>
+        </div>
+
+        <button class="btn primary" id="importPasted">Добавить слова →</button>
+      </div>
+    </div>
+
+    <!-- Quick add single word -->
+    <div class="import-panel" style="margin-top: 32px;">
+      <h3>⚡ Быстрое добавление</h3>
+      <p>Добавить одно слово вручную</p>
+      <div style="display: grid; grid-template-columns: 1fr 1fr 1fr auto; gap: 12px; align-items: end;">
+        <div class="form-field" style="margin: 0;">
+          <label>Русский</label>
+          <input type="text" id="quickRu">
+        </div>
+        <div class="form-field" style="margin: 0;">
+          <label>Español</label>
+          <input type="text" id="quickEs">
+        </div>
+        <div class="form-field" style="margin: 0;">
+          <label>Тема</label>
+          <select id="quickTopic"></select>
+        </div>
+        <button class="btn primary" id="quickAdd">+ Добавить</button>
+      </div>
+    </div>
+
+    <!-- Data management -->
+    <div class="import-panel" style="margin-top: 32px;">
+      <h3>🗂 Управление данными</h3>
+      <p>Экспорт, сброс и демо-данные</p>
+      <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+        <button class="btn secondary" id="exportData">⬇ Экспорт CSV</button>
+        <button class="btn ghost" id="loadDemo">+ Загрузить демо-набор</button>
+        <button class="btn ghost" id="resetData" style="margin-left: auto;">⌫ Сбросить всё</button>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- Modal -->
+<div class="modal-backdrop" id="modal">
+  <div class="modal">
+    <h3 id="modalTitle">Подтверждение</h3>
+    <p id="modalText" style="font-family: 'DM Mono', monospace; font-size: 13px; opacity: 0.8;"></p>
+    <div class="modal-actions">
+      <button class="btn ghost" id="modalCancel">Отмена</button>
+      <button class="btn primary" id="modalConfirm">Подтвердить</button>
+    </div>
+  </div>
+</div>
+
+<!-- Room setup modal -->
+<div class="modal-backdrop" id="roomModal">
+  <div class="modal room-modal">
+    <h2>¡<em>Hola</em>! Совместное изучение</h2>
+    <p class="room-tagline">Создай комнату или подключись к существующей — все участники видят и редактируют одни и те же слова в реальном времени.</p>
+
+    <div class="room-option" id="optCreate">
+      <h4>🌟 Создать новую комнату</h4>
+      <p>Случайное имя, ты сможешь поделиться ссылкой</p>
+    </div>
+
+    <div class="room-option" id="optJoin" style="cursor: default;">
+      <h4>🔗 Подключиться к существующей</h4>
+      <p>Введи имя комнаты (или открой ссылку, которой с тобой поделились)</p>
+      <div class="room-input-wrap">
+        <input type="text" id="roomNameInput" placeholder="например: anya-spanish" autocomplete="off">
+        <button class="btn primary" id="joinRoomConfirm">Войти →</button>
+      </div>
+    </div>
+
+    <div class="room-option" id="optSolo">
+      <h4>🔒 Учить одной (без синхронизации)</h4>
+      <p>Только локально, как раньше. Можно подключить комнату позже.</p>
+    </div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<script type="module">
+// ============================================
+// FIREBASE SETUP
+// ============================================
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-app.js";
+import {
+  getFirestore, doc, setDoc, onSnapshot, getDoc
+} from "https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyA2aRS39_rmS1J7L6MpDhX7ns2AFthCRW8",
+  authDomain: "vamos-spanish-6636d.firebaseapp.com",
+  projectId: "vamos-spanish-6636d",
+  storageBucket: "vamos-spanish-6636d.firebasestorage.app",
+  messagingSenderId: "467030492602",
+  appId: "1:467030492602:web:73f4556997b1aac6818983",
+  measurementId: "G-B5R7VV73C8"
+};
+
+const firebaseApp = initializeApp(firebaseConfig);
+const db = getFirestore(firebaseApp);
+
+// ============================================
+// STATE & STORAGE
+// ============================================
+const STORAGE_KEY = 'vamos_spanish_app_v1';
+const ROOM_KEY = 'vamos_spanish_room';
+
+let state = {
+  words: [],     // {id, ru, es, topicId, mistakes, streakCorrect, lastSeen, status}
+  topics: [],    // {id, name, emoji, color}
+  selectedTopics: new Set(),
+  excludeStatuses: new Set(), // statuses to exclude from session ('mastered', 'familiar', etc.)
+  session: null,
+  filter: 'all',
+  search: '',
+  direction: 'ru-es', // or 'es-ru'
+  room: null,         // active room id (null = local-only mode)
+  syncStatus: 'offline', // offline | syncing | online | error
+  unsubscribe: null,    // firestore listener unsubscribe fn
+  lastWriteFromMe: 0,   // timestamp of last local write to ignore echo
+  saveTimer: null,
+  clientId: null
+};
+
+const TOPIC_COLORS = ['#E85D3C', '#F4B942', '#6B7F3A', '#6B3FA0', '#4A90B8', '#F4A8A0'];
+const DEFAULT_EMOJIS = ['📚', '✨', '🌟', '🎯', '💡', '🔥', '🌿', '🍋', '🎨', '🌊'];
+
+// Generate a stable client id for this browser
+state.clientId = localStorage.getItem('vamos_client_id');
+if (!state.clientId) {
+  state.clientId = Math.random().toString(36).slice(2, 12);
+  localStorage.setItem('vamos_client_id', state.clientId);
+}
+
+function save() {
+  // Always cache locally
+  localStorage.setItem(STORAGE_KEY, JSON.stringify({
+    words: state.words,
+    topics: state.topics
+  }));
+  // Push to Firestore if in a room (debounced)
+  if (state.room) {
+    scheduleCloudSave();
+  }
+}
+
+function load() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (raw) {
+      const d = JSON.parse(raw);
+      state.words = d.words || [];
+      state.topics = d.topics || [];
+    }
+  } catch (e) { console.error(e); }
+}
+
+function uid() {
+  return Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
+}
+
+// ============================================
+// FIREBASE SYNC
+// ============================================
+function setSyncStatus(status, text) {
+  state.syncStatus = status;
+  const dot = document.getElementById('syncDot');
+  const statusEl = document.getElementById('syncStatus');
+  if (dot) {
+    dot.className = 'sync-dot ' + status;
+  }
+  if (statusEl) {
+    const texts = {
+      offline: 'не подключено',
+      syncing: 'синхронизация...',
+      online: 'в сети ✓',
+      error: 'ошибка ⚠'
+    };
+    statusEl.textContent = text || texts[status] || status;
+  }
+}
+
+function renderSyncBar() {
+  const bar = document.getElementById('syncBar');
+  const joinBtn = document.getElementById('joinRoomBtn');
+  if (state.room) {
+    bar.style.display = 'flex';
+    joinBtn.style.display = 'none';
+    document.getElementById('syncRoomName').textContent = state.room;
+    setSyncStatus(state.syncStatus);
+  } else {
+    bar.style.display = 'none';
+    joinBtn.style.display = 'inline-block';
+  }
+}
+
+// Normalize room name (lowercase, alphanumeric + dashes)
+function normalizeRoomName(name) {
+  return String(name || '').trim().toLowerCase()
+    .replace(/\s+/g, '-')
+    .replace(/[^a-z0-9а-яё\-_]/gi, '')
+    .slice(0, 40);
+}
+
+function generateRoomName() {
+  const adjectives = ['azul', 'roja', 'verde', 'feliz', 'rapida', 'dulce', 'magica', 'brillante'];
+  const nouns = ['gato', 'sol', 'luna', 'flor', 'mar', 'pajaro', 'estrella', 'rio'];
+  const a = adjectives[Math.floor(Math.random() * adjectives.length)];
+  const n = nouns[Math.floor(Math.random() * nouns.length)];
+  const num = Math.floor(Math.random() * 1000);
+  return `${a}-${n}-${num}`;
+}
+
+async function joinRoom(roomName, options = {}) {
+  const normalized = normalizeRoomName(roomName);
+  if (!normalized) {
+    toast('Некорректное имя комнаты', 'error');
+    return false;
+  }
+
+  // Unsubscribe previous listener if any
+  if (state.unsubscribe) {
+    state.unsubscribe();
+    state.unsubscribe = null;
+  }
+
+  state.room = normalized;
+  localStorage.setItem(ROOM_KEY, normalized);
+  renderSyncBar();
+  setSyncStatus('syncing');
+
+  try {
+    const roomRef = doc(db, 'rooms', normalized);
+    const snap = await getDoc(roomRef);
+
+    if (snap.exists()) {
+      const data = snap.data();
+      const remoteWords = data.words || [];
+      const remoteTopics = data.topics || [];
+      const hasLocalData = state.words.length > 0 || state.topics.length > 0;
+      const hasRemoteData = remoteWords.length > 0 || remoteTopics.length > 0;
+
+      if (hasLocalData && hasRemoteData && !options.skipMergePrompt) {
+        // Ask user how to handle conflict
+        const choice = await askMergeChoice(state.words.length, remoteWords.length);
+        if (choice === 'cancel') {
+          // Roll back room state
+          state.room = null;
+          localStorage.removeItem(ROOM_KEY);
+          renderSyncBar();
+          return false;
+        } else if (choice === 'remote') {
+          state.words = remoteWords;
+          state.topics = remoteTopics;
+        } else if (choice === 'merge') {
+          // Merge: combine topics and words, avoiding duplicates
+          const mergedTopics = [...remoteTopics];
+          const topicNameMap = new Map(mergedTopics.map(t => [t.name.toLowerCase(), t]));
+          state.topics.forEach(t => {
+            if (!topicNameMap.has(t.name.toLowerCase())) {
+              mergedTopics.push(t);
+              topicNameMap.set(t.name.toLowerCase(), t);
+            }
+          });
+          const mergedWords = [...remoteWords];
+          const wordKey = w => `${w.ru.toLowerCase()}|${w.es.toLowerCase()}`;
+          const wordSet = new Set(mergedWords.map(wordKey));
+          state.words.forEach(w => {
+            if (!wordSet.has(wordKey(w))) {
+              // Re-map topic id if topic was matched by name
+              const localTopic = state.topics.find(t => t.id === w.topicId);
+              if (localTopic) {
+                const mergedTopic = topicNameMap.get(localTopic.name.toLowerCase());
+                if (mergedTopic) w.topicId = mergedTopic.id;
+              }
+              mergedWords.push(w);
+              wordSet.add(wordKey(w));
+            }
+          });
+          state.topics = mergedTopics;
+          state.words = mergedWords;
+          // Push merged back
+          await setDoc(roomRef, {
+            words: state.words,
+            topics: state.topics,
+            updatedAt: Date.now(),
+            updatedBy: state.clientId
+          });
+        } else { // 'local'
+          // Keep local, push it to room
+          await setDoc(roomRef, {
+            words: state.words,
+            topics: state.topics,
+            updatedAt: Date.now(),
+            updatedBy: state.clientId
+          });
+        }
+      } else {
+        state.words = remoteWords;
+        state.topics = remoteTopics;
+        toast('Подключено — данные из комнаты загружены', 'success');
+      }
+
+      localStorage.setItem(STORAGE_KEY, JSON.stringify({
+        words: state.words,
+        topics: state.topics
+      }));
+    } else {
+      // New room — push current local data
+      await setDoc(roomRef, {
+        words: state.words,
+        topics: state.topics,
+        updatedAt: Date.now(),
+        updatedBy: state.clientId
+      });
+      toast('Создана новая комната', 'success');
+    }
+
+    // Subscribe to real-time updates
+    state.unsubscribe = onSnapshot(roomRef, (snap) => {
+      if (!snap.exists()) return;
+      const data = snap.data();
+      if (data.updatedBy === state.clientId) {
+        setSyncStatus('online');
+        return;
+      }
+      state.words = data.words || [];
+      state.topics = data.topics || [];
+      localStorage.setItem(STORAGE_KEY, JSON.stringify({
+        words: state.words,
+        topics: state.topics
+      }));
+      setSyncStatus('online');
+      renderHeaderStats();
+      const activeView = document.querySelector('.view.active').id;
+      if (activeView === 'view-topics') renderTopics();
+      else if (activeView === 'view-words') renderWordsTable();
+      else if (activeView === 'view-study' && !state.session) renderStudyView();
+      refreshQuickTopicSelect();
+      toast('Обновлено другим участником', 'success');
+    }, (err) => {
+      console.error('Firestore error:', err);
+      setSyncStatus('error');
+      toast('Ошибка синхронизации', 'error');
+    });
+
+    setSyncStatus('online');
+    renderHeaderStats();
+    renderTopics();
+    renderWordsTable();
+    if (!state.session) renderStudyView();
+    refreshQuickTopicSelect();
+    return true;
+  } catch (err) {
+    console.error('joinRoom error:', err);
+    setSyncStatus('error');
+    toast('Не удалось подключиться: ' + err.message, 'error');
+    return false;
+  }
+}
+
+// Show a custom prompt for merge choice
+function askMergeChoice(localCount, remoteCount) {
+  return new Promise((resolve) => {
+    const html = `
+      <div class="modal room-modal">
+        <h2>Что делать с данными?</h2>
+        <p class="room-tagline">У тебя локально <strong>${localCount}</strong> слов, а в комнате уже <strong>${remoteCount}</strong>. Выбери:</p>
+        <div class="room-option" data-choice="remote">
+          <h4>☁️ Взять из комнаты</h4>
+          <p>Локальные данные будут заменены (на этом устройстве)</p>
+        </div>
+        <div class="room-option" data-choice="local">
+          <h4>📤 Загрузить мои</h4>
+          <p>Перезаписать комнату моими словами (для всех участников!)</p>
+        </div>
+        <div class="room-option" data-choice="merge">
+          <h4>🔀 Объединить</h4>
+          <p>Соединить оба набора, дубликаты по словам исключатся</p>
+        </div>
+        <div class="modal-actions">
+          <button class="btn ghost" data-choice="cancel">Отмена</button>
+        </div>
+      </div>
+    `;
+    const backdrop = document.createElement('div');
+    backdrop.className = 'modal-backdrop active';
+    backdrop.innerHTML = html;
+    document.body.appendChild(backdrop);
+    backdrop.querySelectorAll('[data-choice]').forEach(el => {
+      el.addEventListener('click', () => {
+        const choice = el.dataset.choice;
+        backdrop.remove();
+        resolve(choice);
+      });
+    });
+  });
+}
+
+function leaveRoom() {
+  if (state.unsubscribe) {
+    state.unsubscribe();
+    state.unsubscribe = null;
+  }
+  state.room = null;
+  localStorage.removeItem(ROOM_KEY);
+  // Remove room param from URL
+  const url = new URL(window.location.href);
+  url.searchParams.delete('room');
+  history.replaceState({}, '', url);
+  renderSyncBar();
+  toast('Вышла из комнаты');
+}
+
+function scheduleCloudSave() {
+  if (state.saveTimer) clearTimeout(state.saveTimer);
+  setSyncStatus('syncing');
+  state.saveTimer = setTimeout(async () => {
+    if (!state.room) return;
+    try {
+      const roomRef = doc(db, 'rooms', state.room);
+      await setDoc(roomRef, {
+        words: state.words,
+        topics: state.topics,
+        updatedAt: Date.now(),
+        updatedBy: state.clientId
+      });
+      setSyncStatus('online');
+    } catch (err) {
+      console.error('Cloud save error:', err);
+      setSyncStatus('error');
+    }
+  }, 800);
+}
+
+function buildShareLink() {
+  const url = new URL(window.location.href);
+  url.searchParams.set('room', state.room);
+  return url.toString();
+}
+
+// ============================================
+// WORD MANAGEMENT
+// ============================================
+function getWordStatus(w) {
+  if (w.mistakes >= 2 && w.streakCorrect < 2) return 'struggling';
+  if (w.streakCorrect >= 3) return 'mastered';
+  if (w.lastSeen === null) return 'new';
+  // After at least one correct answer but not yet mastered
+  if (w.streakCorrect >= 1) return 'familiar';
+  return 'learning';
+}
+
+function getStatusBadge(status) {
+  const map = {
+    struggling: { cls: 'struggling', text: '⚠ сложное' },
+    mastered: { cls: 'mastered', text: '✓ выучено' },
+    familiar: { cls: 'familiar', text: '◐ знакомо' },
+    new: { cls: 'new', text: '⊙ новое' },
+    learning: { cls: '', text: '↻ учится' }
+  };
+  return map[status];
+}
+
+function addWord(ru, es, topicId) {
+  ru = ru.trim();
+  es = es.trim();
+  if (!ru || !es) return null;
+  const word = {
+    id: uid(),
+    ru, es,
+    topicId,
+    mistakes: 0,
+    streakCorrect: 0,
+    lastSeen: null,
+    timesShown: 0
+  };
+  state.words.push(word);
+  return word;
+}
+
+function ensureTopic(name, emoji) {
+  if (!name) name = 'Без темы';
+  let t = state.topics.find(x => x.name.toLowerCase() === name.toLowerCase());
+  if (!t) {
+    t = {
+      id: uid(),
+      name,
+      emoji: emoji || DEFAULT_EMOJIS[state.topics.length % DEFAULT_EMOJIS.length],
+      color: TOPIC_COLORS[state.topics.length % TOPIC_COLORS.length]
+    };
+    state.topics.push(t);
+  } else if (emoji && !t.emoji) {
+    t.emoji = emoji;
+  }
+  return t;
+}
+
+// ============================================
+// VIEW SWITCHING
+// ============================================
+document.querySelectorAll('.tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+    tab.classList.add('active');
+    const v = tab.dataset.view;
+    document.getElementById('view-' + v).classList.add('active');
+    if (v === 'topics') renderTopics();
+    if (v === 'words') renderWordsTable();
+    if (v === 'study') renderStudyView();
+    if (v === 'import') refreshQuickTopicSelect();
+  });
+});
+
+// ============================================
+// HEADER STATS
+// ============================================
+function renderHeaderStats() {
+  const total = state.words.length;
+  const struggling = state.words.filter(w => getWordStatus(w) === 'struggling').length;
+  const mastered = state.words.filter(w => getWordStatus(w) === 'mastered').length;
+
+  document.getElementById('headerStats').innerHTML = `
+    <div class="stat-pill mustard"><strong>${total}</strong> слов</div>
+    <div class="stat-pill olive"><strong>${mastered}</strong> ✓ выучено</div>
+    <div class="stat-pill terracotta"><strong>${struggling}</strong> ⚠ сложных</div>
+  `;
+
+  document.getElementById('cntWords').textContent = total;
+  document.getElementById('cntTopics').textContent = state.topics.length;
+  document.getElementById('cntStudy').textContent = getStudyPool().length;
+}
+
+// Returns the set of words that would be included in a session given current filters
+function getStudyPool() {
+  let pool = state.selectedTopics.size > 0
+    ? state.words.filter(w => state.selectedTopics.has(w.topicId))
+    : state.words.slice();
+  if (state.excludeStatuses.size > 0) {
+    pool = pool.filter(w => !state.excludeStatuses.has(getWordStatus(w)));
+  }
+  return pool;
+}
+
+// ============================================
+// STUDY SESSION
+// ============================================
+function buildSessionDeck(wordPool) {
+  // Prioritize struggling words and new words
+  const struggling = wordPool.filter(w => getWordStatus(w) === 'struggling');
+  const newOnes = wordPool.filter(w => getWordStatus(w) === 'new');
+  const learning = wordPool.filter(w => getWordStatus(w) === 'learning');
+  const familiar = wordPool.filter(w => getWordStatus(w) === 'familiar');
+  const mastered = wordPool.filter(w => getWordStatus(w) === 'mastered');
+
+  // Sort struggling by mistakes desc; mastered come at the end and only some
+  struggling.sort((a, b) => b.mistakes - a.mistakes);
+  // Mix new, learning and familiar together
+  const middle = [...newOnes, ...learning, ...familiar];
+  // Sort middle randomly within group
+  middle.sort(() => Math.random() - 0.5);
+  // Take half of mastered for review
+  const masteredReview = mastered.slice(0, Math.ceil(mastered.length / 2));
+  masteredReview.sort(() => Math.random() - 0.5);
+
+  return [...struggling, ...middle, ...masteredReview].map(w => w.id);
+}
+
+function startSession() {
+  const pool = getStudyPool();
+
+  if (pool.length === 0) {
+    toast('Нет слов для изучения с текущими фильтрами', 'error');
+    return;
+  }
+
+  const deck = buildSessionDeck(pool);
+  state.session = {
+    deck,
+    index: 0,
+    correctIds: [],
+    wrongIds: [],
+    flipped: false
+  };
+  renderStudyView();
+}
+
+function answerCard(correct) {
+  if (!state.session) return;
+  const card = document.querySelector('.flashcard');
+  if (!card) return;
+
+  // animate
+  card.classList.add(correct ? 'swipe-right' : 'swipe-left');
+
+  const wordId = state.session.deck[state.session.index];
+  const word = state.words.find(w => w.id === wordId);
+  if (word) {
+    word.lastSeen = Date.now();
+    word.timesShown = (word.timesShown || 0) + 1;
+    if (correct) {
+      word.streakCorrect = (word.streakCorrect || 0) + 1;
+      state.session.correctIds.push(wordId);
+    } else {
+      word.streakCorrect = 0;
+      word.mistakes = (word.mistakes || 0) + 1;
+      state.session.wrongIds.push(wordId);
+      // Schedule re-show: append to deck again at random later position
+      const remaining = state.session.deck.length - state.session.index - 1;
+      const insertOffset = Math.min(remaining + Math.floor(Math.random() * 4) + 3, state.session.deck.length);
+      state.session.deck.splice(state.session.index + insertOffset, 0, wordId);
+    }
+  }
+
+  setTimeout(() => {
+    state.session.index++;
+    state.session.flipped = false;
+    save();
+    renderHeaderStats();
+    renderStudyView();
+  }, 400);
+}
+
+function renderStudyView() {
+  const container = document.getElementById('studyContent');
+
+  // No words yet
+  if (state.words.length === 0) {
+    container.innerHTML = `
+      <div class="empty-state">
+        <h3>¡Hola! 👋</h3>
+        <p>Загрузи свои первые слова, чтобы начать</p>
+        <button class="btn primary" onclick="document.querySelector('[data-view=import]').click()">→ Загрузить слова</button>
+      </div>
+    `;
+    return;
+  }
+
+  // No active session
+  if (!state.session) {
+    const topicNames = state.selectedTopics.size > 0
+      ? Array.from(state.selectedTopics).map(id => {
+          const t = state.topics.find(x => x.id === id);
+          return t ? `${t.emoji} ${t.name}` : '';
+        }).filter(Boolean).join(' · ')
+      : 'все темы';
+
+    // Count words per status within selected topics
+    const topicPool = state.selectedTopics.size > 0
+      ? state.words.filter(w => state.selectedTopics.has(w.topicId))
+      : state.words.slice();
+    const counts = {
+      new: topicPool.filter(w => getWordStatus(w) === 'new').length,
+      learning: topicPool.filter(w => getWordStatus(w) === 'learning').length,
+      familiar: topicPool.filter(w => getWordStatus(w) === 'familiar').length,
+      mastered: topicPool.filter(w => getWordStatus(w) === 'mastered').length,
+      struggling: topicPool.filter(w => getWordStatus(w) === 'struggling').length
+    };
+    const poolSize = getStudyPool().length;
+
+    const chip = (status, emoji, label) => {
+      const included = !state.excludeStatuses.has(status);
+      const cnt = counts[status];
+      return `<button class="include-chip ${included ? 'included s-' + status : ''}" data-status="${status}">
+        ${emoji} ${label} <span class="count">${cnt}</span>
+      </button>`;
+    };
+
+    container.innerHTML = `
+      <div class="session-config">
+        <div class="config-row">
+          <span class="config-row-label">Темы:</span>
+          <strong style="font-family:'Fraunces',serif; font-size: 16px;">${topicNames}</strong>
+          <button class="btn ghost small" id="goToTopics" style="margin-left: auto;">Выбрать темы →</button>
+        </div>
+        <div class="config-row">
+          <span class="config-row-label">Включить:</span>
+          ${chip('new', '⊙', 'новые')}
+          ${chip('learning', '↻', 'учатся')}
+          ${chip('familiar', '◐', 'знакомо')}
+          ${chip('struggling', '⚠', 'сложные')}
+          ${chip('mastered', '✓', 'выучено')}
+        </div>
+        <div class="config-row">
+          <span class="config-row-label">Направление:</span>
+          <div class="toggle-group">
+            <button class="toggle-btn ${state.direction === 'ru-es' ? 'active' : ''}" data-dir="ru-es">RU → ES</button>
+            <button class="toggle-btn ${state.direction === 'es-ru' ? 'active' : ''}" data-dir="es-ru">ES → RU</button>
+          </div>
+          <span style="margin-left: auto; font-family: 'DM Mono', monospace; font-size: 13px;">
+            <strong style="font-family:'Fraunces',serif; font-size: 22px; color: var(--terracotta);">${poolSize}</strong> слов в сессии
+          </span>
+        </div>
+      </div>
+      <div class="card-stage">
+        <div class="empty-state" style="border: 3px solid var(--ink); background: var(--cream);">
+          <h3>Готова начать? 🚀</h3>
+          <p>Нажми на карточку, чтобы перевернуть.<br>Или сразу ответь зелёной/красной галочкой — если уверена.</p>
+          <button class="btn primary" id="startBtn" style="font-size: 16px; padding: 16px 32px;" ${poolSize === 0 ? 'disabled' : ''}>
+            ${poolSize === 0 ? 'Нет слов с этими фильтрами' : 'Начать сессию →'}
+          </button>
+        </div>
+      </div>
+    `;
+    document.getElementById('startBtn').addEventListener('click', startSession);
+    document.getElementById('goToTopics').addEventListener('click', () => {
+      document.querySelector('[data-view=topics]').click();
+    });
+    document.querySelectorAll('.toggle-btn').forEach(b => {
+      b.addEventListener('click', () => {
+        state.direction = b.dataset.dir;
+        renderStudyView();
+      });
+    });
+    document.querySelectorAll('.include-chip').forEach(c => {
+      c.addEventListener('click', () => {
+        const status = c.dataset.status;
+        if (state.excludeStatuses.has(status)) {
+          state.excludeStatuses.delete(status);
+        } else {
+          state.excludeStatuses.add(status);
+        }
+        renderStudyView();
+        renderHeaderStats();
+      });
+    });
+    return;
+  }
+
+  // Session in progress
+  const s = state.session;
+
+  if (s.index >= s.deck.length) {
+    // session end
+    const totalAnswered = s.correctIds.length + s.wrongIds.length;
+    const accuracy = totalAnswered > 0 ? Math.round(s.correctIds.length / totalAnswered * 100) : 0;
+    container.innerHTML = `
+      <div class="session-end">
+        <h2>¡<em>Bravo</em>! 🎉</h2>
+        <p>Сессия завершена</p>
+        <div class="results">
+          <div class="result-box good">
+            <div class="num">${s.correctIds.length}</div>
+            <div class="label">правильно</div>
+          </div>
+          <div class="result-box bad">
+            <div class="num">${s.wrongIds.length}</div>
+            <div class="label">ошибок</div>
+          </div>
+          <div class="result-box">
+            <div class="num">${accuracy}%</div>
+            <div class="label">точность</div>
+          </div>
+        </div>
+        <div style="display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;">
+          <button class="btn primary" id="restartBtn">↻ Ещё одна сессия</button>
+          <button class="btn ghost" id="exitBtn">К темам</button>
+        </div>
+      </div>
+    `;
+    document.getElementById('restartBtn').addEventListener('click', () => {
+      state.session = null;
+      startSession();
+    });
+    document.getElementById('exitBtn').addEventListener('click', () => {
+      state.session = null;
+      document.querySelector('[data-view=topics]').click();
+    });
+    return;
+  }
+
+  const wordId = s.deck[s.index];
+  const word = state.words.find(w => w.id === wordId);
+  if (!word) {
+    s.index++;
+    renderStudyView();
+    return;
+  }
+  const topic = state.topics.find(t => t.id === word.topicId);
+  const topicLabel = topic ? `${topic.emoji} ${topic.name}` : '—';
+
+  const frontText = state.direction === 'ru-es' ? word.ru : word.es;
+  const backText = state.direction === 'ru-es' ? word.es : word.ru;
+  const frontLang = state.direction === 'ru-es' ? 'RU' : 'ES';
+  const backLang = state.direction === 'ru-es' ? 'ES' : 'RU';
+
+  container.innerHTML = `
+    <div class="study-controls">
+      <h2>Сессия в процессе</h2>
+      <div class="progress-info">Карточка ${s.index + 1} / ${s.deck.length} · ✓ ${s.correctIds.length} · ✗ ${s.wrongIds.length}</div>
+    </div>
+    <div class="card-stage">
+      <div class="flashcard" id="flashcard">
+        <div class="flashcard-inner">
+          <div class="face front">
+            <div class="face-tag">${topicLabel} · ${frontLang}</div>
+            <div class="face-num">${s.index + 1}/${s.deck.length}</div>
+            <div class="word ${frontLang === 'ES' ? 'es' : ''}">${escapeHtml(frontText)}</div>
+            <div class="flip-hint">↺ нажми чтобы перевернуть · или ответь сразу ↓</div>
+          </div>
+          <div class="face back">
+            <div class="face-tag">${topicLabel} · ${backLang}</div>
+            <div class="face-num">${s.index + 1}/${s.deck.length}</div>
+            <div class="word ${backLang === 'ES' ? 'es' : ''}">${escapeHtml(backText)}</div>
+            <div class="word-meta">${frontText}</div>
+            <div class="flip-hint">оцени свой ответ ↓</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div>
+      <div class="answer-row">
+        <div style="text-align: center;">
+          <button class="answer-btn wrong" id="btnWrong">✗</button>
+          <div class="answer-label">не знаю</div>
+        </div>
+        <div style="text-align: center;">
+          <button class="answer-btn correct" id="btnRight">✓</button>
+          <div class="answer-label">знаю!</div>
+        </div>
+      </div>
+      <div style="text-align: center; margin-top: 24px;">
+        <button class="btn ghost small" id="endSession">Закончить сессию</button>
+      </div>
+    </div>
+  `;
+
+  const cardEl = document.getElementById('flashcard');
+  const rightBtn = document.getElementById('btnRight');
+  const wrongBtn = document.getElementById('btnWrong');
+
+  cardEl.addEventListener('click', () => {
+    if (cardEl.classList.contains('swipe-right') || cardEl.classList.contains('swipe-left')) return;
+    cardEl.classList.toggle('flipped');
+    state.session.flipped = cardEl.classList.contains('flipped');
+  });
+
+  rightBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    answerCard(true);
+  });
+  wrongBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    answerCard(false);
+  });
+  document.getElementById('endSession').addEventListener('click', () => {
+    confirm_('Завершить сессию?', 'Прогресс ответов сохранится.', () => {
+      state.session.index = state.session.deck.length;
+      renderStudyView();
+    });
+  });
+
+  // Keyboard shortcuts
+  document.onkeydown = (e) => {
+    if (!state.session || state.session.index >= state.session.deck.length) return;
+    if (e.code === 'Space') {
+      e.preventDefault();
+      cardEl.click();
+    } else if (e.key === 'ArrowRight' || e.key === '1') {
+      answerCard(true);
+    } else if (e.key === 'ArrowLeft' || e.key === '2') {
+      answerCard(false);
+    }
+  };
+}
+
+// ============================================
+// TOPICS VIEW
+// ============================================
+function renderTopics() {
+  const grid = document.getElementById('topicGrid');
+  if (state.topics.length === 0) {
+    grid.innerHTML = `
+      <div class="empty-state" style="grid-column: 1/-1;">
+        <h3>Пока нет тем</h3>
+        <p>Загрузи слова, чтобы появились темы</p>
+        <button class="btn primary" onclick="document.querySelector('[data-view=import]').click()">→ Загрузить</button>
+      </div>
+    `;
+    return;
+  }
+  grid.innerHTML = state.topics.map(t => {
+    const words = state.words.filter(w => w.topicId === t.id);
+    const mastered = words.filter(w => getWordStatus(w) === 'mastered').length;
+    const familiar = words.filter(w => getWordStatus(w) === 'familiar').length;
+    const struggling = words.filter(w => getWordStatus(w) === 'struggling').length;
+    const newCount = words.filter(w => getWordStatus(w) === 'new').length;
+    // progress: mastered counts fully, familiar counts as half
+    const progress = words.length > 0 ? ((mastered + familiar * 0.5) / words.length * 100) : 0;
+    const selected = state.selectedTopics.has(t.id);
+    return `
+      <div class="topic-card ${selected ? 'selected' : ''}" data-topic="${t.id}">
+        <div class="topic-card-head">
+          <div>
+            <div class="topic-emoji">${t.emoji}</div>
+          </div>
+          <div class="topic-checkbox">✓</div>
+        </div>
+        <div class="topic-name">${escapeHtml(t.name)}</div>
+        <div class="topic-meta">${words.length} слов · ${mastered} выучено</div>
+        <div class="topic-progress">
+          <div class="topic-progress-fill" style="width: ${progress}%; background: ${t.color};"></div>
+        </div>
+        <div class="topic-stats">
+          ${newCount > 0 ? `<span class="topic-stat">${newCount} ⊙ новых</span>` : ''}
+          ${familiar > 0 ? `<span class="topic-stat">${familiar} ◐ знакомо</span>` : ''}
+          ${struggling > 0 ? `<span class="topic-stat struggling">${struggling} ⚠ сложных</span>` : ''}
+          ${mastered > 0 ? `<span class="topic-stat">${mastered} ✓ выучено</span>` : ''}
+        </div>
+        <div class="topic-card-actions">
+          <button class="btn ghost small" data-action="study" data-topic="${t.id}">Учить →</button>
+          <button class="btn ghost small" data-action="rename" data-topic="${t.id}">✏</button>
+          <button class="btn ghost small" data-action="delete" data-topic="${t.id}" style="margin-left:auto;">⌫</button>
+        </div>
+      </div>
+    `;
+  }).join('');
+
+  // Card click for selection
+  grid.querySelectorAll('.topic-card').forEach(card => {
+    card.addEventListener('click', (e) => {
+      if (e.target.closest('[data-action]')) return;
+      const id = card.dataset.topic;
+      if (state.selectedTopics.has(id)) {
+        state.selectedTopics.delete(id);
+      } else {
+        state.selectedTopics.add(id);
+      }
+      renderTopics();
+      renderHeaderStats();
+    });
+  });
+
+  // Action buttons
+  grid.querySelectorAll('[data-action]').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const action = btn.dataset.action;
+      const id = btn.dataset.topic;
+      const topic = state.topics.find(t => t.id === id);
+      if (action === 'study') {
+        state.selectedTopics.clear();
+        state.selectedTopics.add(id);
+        startSession();
+        document.querySelector('[data-view=study]').click();
+      } else if (action === 'rename') {
+        const newName = prompt('Новое название темы:', topic.name);
+        if (newName && newName.trim()) {
+          topic.name = newName.trim();
+          save();
+          renderTopics();
+        }
+      } else if (action === 'delete') {
+        const count = state.words.filter(w => w.topicId === id).length;
+        confirm_(`Удалить тему "${topic.name}"?`, `Будет удалено ${count} слов.`, () => {
+          state.words = state.words.filter(w => w.topicId !== id);
+          state.topics = state.topics.filter(t => t.id !== id);
+          state.selectedTopics.delete(id);
+          save();
+          renderHeaderStats();
+          renderTopics();
+        });
+      }
+    });
+  });
+}
+
+document.getElementById('selectAllTopics').addEventListener('click', () => {
+  state.topics.forEach(t => state.selectedTopics.add(t.id));
+  renderTopics();
+  renderHeaderStats();
+});
+document.getElementById('clearAllTopics').addEventListener('click', () => {
+  state.selectedTopics.clear();
+  renderTopics();
+  renderHeaderStats();
+});
+document.getElementById('startSelectedSession').addEventListener('click', () => {
+  if (state.selectedTopics.size === 0) {
+    toast('Выбери хотя бы одну тему (или ни одной, чтобы учить всё)', 'error');
+    return;
+  }
+  startSession();
+  document.querySelector('[data-view=study]').click();
+});
+
+// ============================================
+// WORDS TABLE
+// ============================================
+function renderWordsTable() {
+  const body = document.getElementById('wordsBody');
+  const search = state.search.toLowerCase();
+  let rows = state.words.slice();
+  if (state.filter !== 'all') {
+    rows = rows.filter(w => getWordStatus(w) === state.filter);
+  }
+  if (search) {
+    rows = rows.filter(w =>
+      w.ru.toLowerCase().includes(search) ||
+      w.es.toLowerCase().includes(search)
+    );
+  }
+  // sort: struggling first, then by mistakes
+  rows.sort((a, b) => {
+    const sa = getWordStatus(a);
+    const sb = getWordStatus(b);
+    if (sa === 'struggling' && sb !== 'struggling') return -1;
+    if (sb === 'struggling' && sa !== 'struggling') return 1;
+    return b.mistakes - a.mistakes;
+  });
+
+  document.getElementById('rowCount').textContent = `${rows.length} из ${state.words.length}`;
+
+  if (rows.length === 0) {
+    body.innerHTML = `<tr><td colspan="8" style="text-align:center; padding: 40px; opacity: 0.5; font-family: 'DM Mono', monospace;">— нет слов по выбранным условиям —</td></tr>`;
+    return;
+  }
+
+  body.innerHTML = rows.map((w, i) => {
+    const status = getWordStatus(w);
+    const badge = getStatusBadge(status);
+    const topic = state.topics.find(t => t.id === w.topicId);
+    const isStruggling = status === 'struggling';
+    return `
+      <tr class="${isStruggling ? 'struggling' : ''}" data-id="${w.id}">
+        <td style="font-family: 'DM Mono', monospace; opacity: 0.4;">${i + 1}</td>
+        <td class="word-cell">${escapeHtml(w.ru)}</td>
+        <td class="word-cell es">${escapeHtml(w.es)}</td>
+        <td>${topic ? `<span style="font-family: 'DM Mono', monospace; font-size: 12px;">${topic.emoji} ${escapeHtml(topic.name)}</span>` : '—'}</td>
+        <td><span class="badge ${badge.cls}">${badge.text}</span></td>
+        <td style="text-align:center; font-family: 'DM Mono', monospace;">${w.mistakes}</td>
+        <td style="text-align:center; font-family: 'DM Mono', monospace;">${w.streakCorrect}</td>
+        <td>
+          <div class="row-actions">
+            <button class="icon-btn" data-act="edit" title="Редактировать">✏</button>
+            <button class="icon-btn" data-act="reset" title="Сбросить прогресс">↺</button>
+            <button class="icon-btn danger" data-act="delete" title="Удалить">⌫</button>
+          </div>
+        </td>
+      </tr>
+    `;
+  }).join('');
+
+  body.querySelectorAll('[data-act]').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      const tr = btn.closest('tr');
+      const id = tr.dataset.id;
+      const word = state.words.find(w => w.id === id);
+      if (!word) return;
+      const act = btn.dataset.act;
+      if (act === 'edit') {
+        const newRu = prompt('Русский:', word.ru);
+        if (newRu === null) return;
+        const newEs = prompt('Español:', word.es);
+        if (newEs === null) return;
+        word.ru = newRu.trim();
+        word.es = newEs.trim();
+        save();
+        renderWordsTable();
+      } else if (act === 'reset') {
+        word.mistakes = 0;
+        word.streakCorrect = 0;
+        word.lastSeen = null;
+        word.timesShown = 0;
+        save();
+        renderWordsTable();
+        renderHeaderStats();
+        toast('Прогресс сброшен');
+      } else if (act === 'delete') {
+        confirm_('Удалить слово?', `"${word.ru}" — "${word.es}"`, () => {
+          state.words = state.words.filter(w => w.id !== id);
+          save();
+          renderWordsTable();
+          renderHeaderStats();
+        });
+      }
+    });
+  });
+}
+
+document.getElementById('wordSearch').addEventListener('input', (e) => {
+  state.search = e.target.value;
+  renderWordsTable();
+});
+document.querySelectorAll('.filter-chip').forEach(chip => {
+  chip.addEventListener('click', () => {
+    document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+    chip.classList.add('active');
+    state.filter = chip.dataset.filter;
+    renderWordsTable();
+  });
+});
+
+// ============================================
+// IMPORT
+// ============================================
+function parseDelimited(text) {
+  // Try to detect delimiter: tab, semicolon, comma
+  const lines = text.split(/\r?\n/).map(l => l.trim()).filter(l => l.length > 0);
+  if (lines.length === 0) return [];
+
+  // detect delimiter from first line
+  const firstLine = lines[0];
+  let delimiter = '\t';
+  if (firstLine.includes('\t')) delimiter = '\t';
+  else if (firstLine.includes(';')) delimiter = ';';
+  else if (firstLine.includes(',')) delimiter = ',';
+
+  // Check if first line is header
+  const firstParts = lines[0].split(delimiter).map(p => p.trim().toLowerCase());
+  const hasHeader = firstParts.some(p => ['русский', 'испанский', 'español', 'spanish', 'russian', 'тема', 'topic', 'ru', 'es'].includes(p));
+
+  let dataLines = lines;
+  let columnMap = { ru: 0, es: 1, topic: 2 };
+  if (hasHeader) {
+    dataLines = lines.slice(1);
+    firstParts.forEach((p, i) => {
+      if (['русский', 'russian', 'ru', 'rus'].includes(p)) columnMap.ru = i;
+      if (['испанский', 'español', 'spanish', 'es', 'esp'].includes(p)) columnMap.es = i;
+      if (['тема', 'topic', 'category'].includes(p)) columnMap.topic = i;
+    });
+  }
+
+  return dataLines.map(line => {
+    const parts = parseCsvLine(line, delimiter);
+    return {
+      ru: parts[columnMap.ru] || '',
+      es: parts[columnMap.es] || '',
+      topic: parts[columnMap.topic] || ''
+    };
+  }).filter(r => r.ru && r.es);
+}
+
+function parseCsvLine(line, delimiter) {
+  const result = [];
+  let current = '';
+  let inQuotes = false;
+  for (let i = 0; i < line.length; i++) {
+    const ch = line[i];
+    if (ch === '"' && !inQuotes) {
+      inQuotes = true;
+    } else if (ch === '"' && inQuotes) {
+      if (line[i + 1] === '"') {
+        current += '"';
+        i++;
+      } else {
+        inQuotes = false;
+      }
+    } else if (ch === delimiter && !inQuotes) {
+      result.push(current.trim());
+      current = '';
+    } else {
+      current += ch;
+    }
+  }
+  result.push(current.trim());
+  return result;
+}
+
+function importData(rows, defaultTopic, defaultEmoji) {
+  let added = 0;
+  rows.forEach(r => {
+    const topicName = r.topic || defaultTopic || 'Без темы';
+    const topic = ensureTopic(topicName, defaultEmoji);
+    const dupe = state.words.find(w => w.ru.toLowerCase() === r.ru.toLowerCase() && w.es.toLowerCase() === r.es.toLowerCase());
+    if (!dupe) {
+      addWord(r.ru, r.es, topic.id);
+      added++;
+    }
+  });
+  save();
+  renderHeaderStats();
+  return added;
+}
+
+// File drop
+const fileDrop = document.getElementById('fileDrop');
+const fileInput = document.getElementById('fileInput');
+fileDrop.addEventListener('click', () => fileInput.click());
+fileDrop.addEventListener('dragover', (e) => {
+  e.preventDefault();
+  fileDrop.classList.add('dragover');
+});
+fileDrop.addEventListener('dragleave', () => fileDrop.classList.remove('dragover'));
+fileDrop.addEventListener('drop', (e) => {
+  e.preventDefault();
+  fileDrop.classList.remove('dragover');
+  if (e.dataTransfer.files.length) handleFile(e.dataTransfer.files[0]);
+});
+fileInput.addEventListener('change', (e) => {
+  if (e.target.files.length) handleFile(e.target.files[0]);
+});
+
+function handleFile(file) {
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    const text = e.target.result;
+    const rows = parseDelimited(text);
+    if (rows.length === 0) {
+      toast('Не удалось распознать файл', 'error');
+      return;
+    }
+    const added = importData(rows);
+    toast(`Добавлено ${added} слов из файла`, 'success');
+    refreshQuickTopicSelect();
+  };
+  reader.readAsText(file, 'UTF-8');
+}
+
+// Paste import
+document.getElementById('importPasted').addEventListener('click', () => {
+  const text = document.getElementById('pasteArea').value;
+  const topic = document.getElementById('pasteTopic').value.trim();
+  const emoji = document.getElementById('pasteEmoji').value.trim();
+  if (!text.trim()) {
+    toast('Вставь данные сначала', 'error');
+    return;
+  }
+  const rows = parseDelimited(text);
+  if (rows.length === 0) {
+    toast('Не удалось распознать данные', 'error');
+    return;
+  }
+  const added = importData(rows, topic, emoji);
+  toast(`Добавлено ${added} слов`, 'success');
+  document.getElementById('pasteArea').value = '';
+  document.getElementById('pasteTopic').value = '';
+  document.getElementById('pasteEmoji').value = '';
+  refreshQuickTopicSelect();
+});
+
+// Quick add
+function refreshQuickTopicSelect() {
+  const sel = document.getElementById('quickTopic');
+  sel.innerHTML = `<option value="">+ Новая тема...</option>` +
+    state.topics.map(t => `<option value="${t.id}">${t.emoji} ${escapeHtml(t.name)}</option>`).join('');
+}
+document.getElementById('quickAdd').addEventListener('click', () => {
+  const ru = document.getElementById('quickRu').value.trim();
+  const es = document.getElementById('quickEs').value.trim();
+  let topicId = document.getElementById('quickTopic').value;
+  if (!ru || !es) {
+    toast('Заполни оба поля', 'error');
+    return;
+  }
+  if (!topicId) {
+    const name = prompt('Название новой темы:');
+    if (!name) return;
+    const t = ensureTopic(name);
+    topicId = t.id;
+  }
+  addWord(ru, es, topicId);
+  save();
+  document.getElementById('quickRu').value = '';
+  document.getElementById('quickEs').value = '';
+  refreshQuickTopicSelect();
+  renderHeaderStats();
+  toast('Слово добавлено', 'success');
+});
+
+// Export
+document.getElementById('exportData').addEventListener('click', () => {
+  const lines = ['русский,испанский,тема,ошибок,подряд_правильно,статус'];
+  state.words.forEach(w => {
+    const topic = state.topics.find(t => t.id === w.topicId);
+    const status = getStatusBadge(getWordStatus(w)).text;
+    lines.push([
+      csvEscape(w.ru),
+      csvEscape(w.es),
+      csvEscape(topic ? topic.name : ''),
+      w.mistakes,
+      w.streakCorrect,
+      csvEscape(status)
+    ].join(','));
+  });
+  const blob = new Blob(["\ufeff" + lines.join('\n')], { type: 'text/csv;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `vamos-spanish-${new Date().toISOString().slice(0, 10)}.csv`;
+  a.click();
+  URL.revokeObjectURL(url);
+  toast('Экспорт готов', 'success');
+});
+
+function csvEscape(s) {
+  s = String(s || '');
+  if (s.includes(',') || s.includes('"') || s.includes('\n')) {
+    return '"' + s.replace(/"/g, '""') + '"';
+  }
+  return s;
+}
+
+// Demo data
+document.getElementById('loadDemo').addEventListener('click', () => {
+  confirm_('Загрузить демо-набор?', 'Будет добавлено около 30 слов в нескольких темах.', () => {
+    const demos = [
+      // Базовое
+      ['🌸', 'Базовое', [
+        ['привет', 'hola'], ['пока', 'adiós'], ['спасибо', 'gracias'],
+        ['пожалуйста', 'por favor'], ['да', 'sí'], ['нет', 'no'],
+        ['извини', 'perdón'], ['доброе утро', 'buenos días']
+      ]],
+      // Еда
+      ['🍅', 'Еда', [
+        ['хлеб', 'pan'], ['вода', 'agua'], ['кофе', 'café'],
+        ['молоко', 'leche'], ['яблоко', 'manzana'], ['сыр', 'queso'],
+        ['рис', 'arroz'], ['рыба', 'pescado']
+      ]],
+      // Глаголы
+      ['⚡', 'Глаголы', [
+        ['быть', 'ser'], ['иметь', 'tener'], ['идти', 'ir'],
+        ['говорить', 'hablar'], ['знать', 'saber'], ['делать', 'hacer'],
+        ['видеть', 'ver'], ['жить', 'vivir']
+      ]],
+      // Дом
+      ['🏠', 'Дом', [
+        ['дом', 'casa'], ['комната', 'habitación'], ['кухня', 'cocina'],
+        ['стол', 'mesa'], ['окно', 'ventana'], ['дверь', 'puerta']
+      ]]
+    ];
+    demos.forEach(([emoji, name, words]) => {
+      const topic = ensureTopic(name, emoji);
+      words.forEach(([ru, es]) => {
+        if (!state.words.find(w => w.ru === ru && w.es === es)) {
+          addWord(ru, es, topic.id);
+        }
+      });
+    });
+    save();
+    renderHeaderStats();
+    renderTopics();
+    refreshQuickTopicSelect();
+    toast('Демо-набор загружен!', 'success');
+  });
+});
+
+// Reset
+document.getElementById('resetData').addEventListener('click', () => {
+  confirm_('Сбросить всё?', 'Все слова, темы и прогресс будут удалены безвозвратно.', () => {
+    state.words = [];
+    state.topics = [];
+    state.selectedTopics.clear();
+    save();
+    renderHeaderStats();
+    renderTopics();
+    renderStudyView();
+    refreshQuickTopicSelect();
+    toast('Данные сброшены');
+  });
+});
+
+// ============================================
+// MODAL & TOAST
+// ============================================
+let modalCallback = null;
+function confirm_(title, text, cb) {
+  document.getElementById('modalTitle').textContent = title;
+  document.getElementById('modalText').textContent = text;
+  modalCallback = cb;
+  document.getElementById('modal').classList.add('active');
+}
+document.getElementById('modalCancel').addEventListener('click', () => {
+  document.getElementById('modal').classList.remove('active');
+  modalCallback = null;
+});
+document.getElementById('modalConfirm').addEventListener('click', () => {
+  document.getElementById('modal').classList.remove('active');
+  if (modalCallback) modalCallback();
+  modalCallback = null;
+});
+
+let toastTimer;
+function toast(msg, type = '') {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast show ' + type;
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+function escapeHtml(s) {
+  return String(s).replace(/[&<>"']/g, m => ({
+    '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+  }[m]));
+}
+
+// ============================================
+// ROOM UI WIRING
+// ============================================
+function showRoomModal() {
+  document.getElementById('roomModal').classList.add('active');
+  const input = document.getElementById('roomNameInput');
+  setTimeout(() => input.focus(), 100);
+}
+
+function hideRoomModal() {
+  document.getElementById('roomModal').classList.remove('active');
+}
+
+document.getElementById('optCreate').addEventListener('click', async () => {
+  hideRoomModal();
+  const name = generateRoomName();
+  const ok = await joinRoom(name);
+  if (ok) {
+    // Update URL with room param so refresh keeps it
+    const url = new URL(window.location.href);
+    url.searchParams.set('room', name);
+    history.replaceState({}, '', url);
+  }
+});
+
+document.getElementById('optSolo').addEventListener('click', () => {
+  hideRoomModal();
+  toast('Локальный режим. Подключиться к комнате можно в любой момент.');
+});
+
+document.getElementById('joinRoomConfirm').addEventListener('click', async () => {
+  const name = document.getElementById('roomNameInput').value;
+  if (!name.trim()) {
+    toast('Введи имя комнаты', 'error');
+    return;
+  }
+  hideRoomModal();
+  const ok = await joinRoom(name);
+  if (ok) {
+    const url = new URL(window.location.href);
+    url.searchParams.set('room', state.room);
+    history.replaceState({}, '', url);
+  }
+});
+
+document.getElementById('roomNameInput').addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') {
+    document.getElementById('joinRoomConfirm').click();
+  }
+});
+
+document.getElementById('joinRoomBtn').addEventListener('click', () => {
+  showRoomModal();
+});
+
+document.getElementById('leaveRoom').addEventListener('click', () => {
+  confirm_('Выйти из комнаты?', 'Локальная копия данных останется на этом устройстве.', () => {
+    leaveRoom();
+  });
+});
+
+document.getElementById('copyShareLink').addEventListener('click', async () => {
+  const link = buildShareLink();
+  try {
+    await navigator.clipboard.writeText(link);
+    toast('Ссылка скопирована! Отправь её собеседнику.', 'success');
+  } catch (e) {
+    // Fallback
+    const ta = document.createElement('textarea');
+    ta.value = link;
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand('copy');
+    document.body.removeChild(ta);
+    toast('Ссылка скопирована!', 'success');
+  }
+});
+
+// ============================================
+// INIT
+// ============================================
+load();
+renderHeaderStats();
+renderStudyView();
+refreshQuickTopicSelect();
+renderSyncBar();
+
+// Check URL for room param, or last-used room from localStorage
+(async function autoConnect() {
+  const params = new URLSearchParams(window.location.search);
+  const urlRoom = params.get('room');
+  const savedRoom = localStorage.getItem(ROOM_KEY);
+
+  if (urlRoom) {
+    // Auto-join from URL — always pull remote (don't prompt merge)
+    await joinRoom(urlRoom, { skipMergePrompt: true });
+    renderHeaderStats();
+    renderStudyView();
+    refreshQuickTopicSelect();
+  } else if (savedRoom) {
+    // Reconnect to last room — skip prompt since this is the same session continuing
+    await joinRoom(savedRoom, { skipMergePrompt: true });
+    renderHeaderStats();
+    renderStudyView();
+    refreshQuickTopicSelect();
+  } else if (state.words.length === 0 && state.topics.length === 0) {
+    // First-time user with no data — show room modal
+    showRoomModal();
+  }
+})();
+</script>
+</body>
+</html>
