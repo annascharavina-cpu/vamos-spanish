@@ -1,9 +1,10 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>¡Vamos! — Карточки испанского</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#FFF8EC">
+<title>¡Vamos a aprender! — Flashcards</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,800;9..144,900&family=DM+Mono:wght@400;500&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -25,7 +26,7 @@
     --shadow-lg: 10px 10px 0 0 #1A1816;
   }
 
-  * { box-sizing: border-box; margin: 0; padding: 0; }
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
 
   html, body {
     background: var(--bg);
@@ -33,9 +34,9 @@
     font-family: 'Outfit', sans-serif;
     min-height: 100vh;
     overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
   }
 
-  /* Decorative background grid */
   body::before {
     content: '';
     position: fixed;
@@ -53,6 +54,8 @@
     max-width: 1400px;
     margin: 0 auto;
     padding: 32px 40px 80px;
+    padding-top: max(32px, env(safe-area-inset-top));
+    padding-bottom: max(80px, env(safe-area-inset-bottom));
   }
 
   /* ============ HEADER ============ */
@@ -64,7 +67,7 @@
     gap: 24px;
     padding-bottom: 28px;
     border-bottom: 3px solid var(--ink);
-    margin-bottom: 36px;
+    margin-bottom: 24px;
   }
 
   .brand {
@@ -87,12 +90,13 @@
     color: var(--bg);
     box-shadow: var(--shadow-sm);
     transform: rotate(-6deg);
+    flex-shrink: 0;
   }
 
   .brand h1 {
     font-family: 'Fraunces', serif;
     font-weight: 900;
-    font-size: 44px;
+    font-size: 38px;
     letter-spacing: -0.02em;
     line-height: 1;
   }
@@ -103,7 +107,7 @@
   }
   .brand p {
     font-family: 'DM Mono', monospace;
-    font-size: 12px;
+    font-size: 11px;
     text-transform: uppercase;
     letter-spacing: 0.15em;
     color: var(--ink);
@@ -113,24 +117,25 @@
 
   .header-stats {
     display: flex;
-    gap: 12px;
+    gap: 8px;
+    flex-wrap: wrap;
   }
 
   .stat-pill {
     background: var(--paper);
     border: 2px solid var(--ink);
     border-radius: 999px;
-    padding: 10px 18px;
+    padding: 8px 14px;
     box-shadow: var(--shadow-sm);
     font-family: 'DM Mono', monospace;
-    font-size: 13px;
+    font-size: 12px;
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 6px;
   }
   .stat-pill strong {
     font-family: 'Fraunces', serif;
-    font-size: 20px;
+    font-size: 18px;
     font-weight: 800;
   }
   .stat-pill.terracotta { background: var(--terracotta); color: var(--bg); }
@@ -141,26 +146,32 @@
   .tabs {
     display: flex;
     gap: 0;
-    margin-bottom: 32px;
+    margin-bottom: 16px;
     border-bottom: 3px solid var(--ink);
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
   }
+  .tabs::-webkit-scrollbar { display: none; }
   .tab {
     background: transparent;
     border: none;
     border: 3px solid var(--ink);
     border-bottom: none;
     border-radius: 12px 12px 0 0;
-    padding: 14px 28px;
+    padding: 12px 22px;
     font-family: 'Outfit', sans-serif;
     font-weight: 600;
-    font-size: 15px;
+    font-size: 14px;
     cursor: pointer;
     margin-right: -3px;
     margin-bottom: -3px;
     background: var(--cream);
     color: var(--ink);
-    transition: all 0.15s;
+    transition: background 0.15s;
     position: relative;
+    white-space: nowrap;
+    flex-shrink: 0;
   }
   .tab:hover { background: var(--paper); }
   .tab.active {
@@ -170,7 +181,7 @@
   }
   .tab .count {
     display: inline-block;
-    margin-left: 8px;
+    margin-left: 6px;
     font-family: 'DM Mono', monospace;
     font-size: 11px;
     background: var(--bg);
@@ -183,6 +194,65 @@
     color: var(--bg);
   }
 
+  /* ============ SYNC / ROOM UI ============ */
+  .sync-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+  }
+  .sync-bar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 14px;
+    background: var(--paper);
+    border: 2px solid var(--ink);
+    border-radius: 999px;
+    box-shadow: var(--shadow-sm);
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    flex-wrap: wrap;
+  }
+  .sync-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: #999;
+    flex-shrink: 0;
+  }
+  .sync-dot.online { background: #4CAF50; animation: pulse 2s ease-in-out infinite; }
+  .sync-dot.syncing { background: var(--mustard); animation: pulse 1s ease-in-out infinite; }
+  .sync-dot.offline { background: #999; }
+  .sync-dot.error { background: var(--terracotta); }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+  }
+  .sync-bar .room-name {
+    font-weight: 600;
+    color: var(--terracotta);
+    max-width: 180px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .sync-bar button {
+    background: var(--ink);
+    color: var(--bg);
+    border: none;
+    padding: 6px 12px;
+    border-radius: 999px;
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    cursor: pointer;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+  .sync-bar button:hover { background: var(--terracotta); }
+  .sync-bar button.danger { background: var(--terracotta); }
+
   /* ============ VIEW WRAPPER ============ */
   .view { display: none; }
   .view.active { display: block; }
@@ -192,35 +262,35 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 32px;
+    margin-bottom: 20px;
     flex-wrap: wrap;
     gap: 16px;
   }
   .study-controls h2 {
     font-family: 'Fraunces', serif;
-    font-size: 28px;
+    font-size: 26px;
     font-weight: 800;
   }
   .study-controls .progress-info {
     font-family: 'DM Mono', monospace;
-    font-size: 13px;
+    font-size: 12px;
     background: var(--paper);
     border: 2px solid var(--ink);
-    padding: 8px 16px;
+    padding: 8px 14px;
     border-radius: 999px;
   }
 
   .card-stage {
     display: grid;
     place-items: center;
-    min-height: 460px;
+    min-height: 420px;
     padding: 20px 0;
     position: relative;
   }
 
   .flashcard {
     width: min(560px, 100%);
-    height: 360px;
+    height: 340px;
     perspective: 1200px;
     cursor: pointer;
     position: relative;
@@ -252,7 +322,7 @@
     border: 4px solid var(--ink);
     border-radius: 24px;
     box-shadow: var(--shadow-lg);
-    padding: 40px;
+    padding: 36px 28px;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -268,25 +338,28 @@
     height: 36px;
     border-bottom: 3px solid var(--ink);
     background: var(--ink);
-    display: flex;
   }
   .face-tag {
     position: absolute;
     top: 8px;
-    left: 20px;
+    left: 16px;
     font-family: 'DM Mono', monospace;
-    font-size: 11px;
+    font-size: 10px;
     color: var(--bg);
     letter-spacing: 0.15em;
     text-transform: uppercase;
     z-index: 2;
+    max-width: 70%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
   .face-num {
     position: absolute;
     top: 8px;
-    right: 20px;
+    right: 16px;
     font-family: 'DM Mono', monospace;
-    font-size: 11px;
+    font-size: 10px;
     color: var(--bg);
     z-index: 2;
   }
@@ -302,47 +375,50 @@
 
   .word {
     font-family: 'Fraunces', serif;
-    font-size: 56px;
+    font-size: 48px;
     font-weight: 800;
     line-height: 1.05;
     text-align: center;
     letter-spacing: -0.02em;
-    margin-top: 20px;
+    margin-top: 16px;
+    word-break: break-word;
   }
   .face.back .word { font-style: italic; }
 
   .word-meta {
-    margin-top: 16px;
+    margin-top: 14px;
     font-family: 'DM Mono', monospace;
-    font-size: 14px;
+    font-size: 13px;
     opacity: 0.75;
     text-align: center;
+    word-break: break-word;
   }
 
   .flip-hint {
     position: absolute;
-    bottom: 20px;
+    bottom: 16px;
     font-family: 'DM Mono', monospace;
-    font-size: 11px;
-    letter-spacing: 0.15em;
+    font-size: 10px;
+    letter-spacing: 0.12em;
     text-transform: uppercase;
     opacity: 0.5;
+    text-align: center;
+    padding: 0 16px;
   }
 
-  /* Answer buttons */
   .answer-row {
     display: flex;
     gap: 24px;
     justify-content: center;
-    margin-top: 36px;
+    margin-top: 28px;
   }
   .answer-btn {
-    width: 88px;
-    height: 88px;
+    width: 80px;
+    height: 80px;
     border-radius: 50%;
     border: 4px solid var(--ink);
     cursor: pointer;
-    font-size: 36px;
+    font-size: 32px;
     font-weight: 900;
     display: grid;
     place-items: center;
@@ -358,23 +434,22 @@
     transform: translate(2px, 2px);
     box-shadow: 2px 2px 0 0 var(--ink);
   }
-  .answer-btn:disabled { opacity: 0.3; cursor: not-allowed; }
   .answer-btn.correct { background: #7DCE82; color: var(--ink); }
   .answer-btn.wrong { background: var(--terracotta); color: var(--bg); }
 
   .answer-label {
     text-align: center;
-    margin-top: 12px;
+    margin-top: 10px;
     font-family: 'DM Mono', monospace;
     font-size: 11px;
-    letter-spacing: 0.15em;
+    letter-spacing: 0.12em;
     text-transform: uppercase;
     opacity: 0.6;
   }
 
   .session-end {
     text-align: center;
-    padding: 60px 20px;
+    padding: 48px 24px;
     background: var(--cream);
     border: 3px solid var(--ink);
     border-radius: 24px;
@@ -384,9 +459,10 @@
   }
   .session-end h2 {
     font-family: 'Fraunces', serif;
-    font-size: 48px;
+    font-size: 40px;
     font-weight: 900;
-    margin-bottom: 12px;
+    margin-bottom: 8px;
+    line-height: 1.1;
   }
   .session-end h2 em {
     color: var(--terracotta);
@@ -394,30 +470,32 @@
   }
   .session-end p {
     font-family: 'DM Mono', monospace;
-    font-size: 14px;
-    margin-bottom: 24px;
+    font-size: 13px;
+    margin-bottom: 20px;
   }
   .session-end .results {
     display: flex;
-    gap: 24px;
+    gap: 16px;
     justify-content: center;
-    margin: 28px 0;
+    margin: 24px 0;
+    flex-wrap: wrap;
   }
   .result-box {
-    padding: 16px 28px;
+    padding: 14px 22px;
     border: 3px solid var(--ink);
     border-radius: 16px;
     box-shadow: var(--shadow-sm);
+    min-width: 90px;
   }
   .result-box .num {
     font-family: 'Fraunces', serif;
-    font-size: 40px;
+    font-size: 36px;
     font-weight: 900;
     line-height: 1;
   }
   .result-box .label {
     font-family: 'DM Mono', monospace;
-    font-size: 11px;
+    font-size: 10px;
     text-transform: uppercase;
     letter-spacing: 0.15em;
     margin-top: 4px;
@@ -427,14 +505,14 @@
 
   .empty-state {
     text-align: center;
-    padding: 80px 20px;
+    padding: 60px 24px;
     background: var(--paper);
     border: 3px dashed var(--ink);
     border-radius: 24px;
   }
   .empty-state h3 {
     font-family: 'Fraunces', serif;
-    font-size: 32px;
+    font-size: 28px;
     font-weight: 800;
     margin-bottom: 8px;
   }
@@ -442,7 +520,7 @@
     font-family: 'DM Mono', monospace;
     font-size: 13px;
     opacity: 0.7;
-    margin-bottom: 24px;
+    margin-bottom: 20px;
   }
 
   /* ============ BUTTONS ============ */
@@ -450,7 +528,7 @@
     background: var(--ink);
     color: var(--bg);
     border: 3px solid var(--ink);
-    padding: 12px 24px;
+    padding: 12px 22px;
     font-family: 'Outfit', sans-serif;
     font-weight: 700;
     font-size: 14px;
@@ -459,7 +537,8 @@
     box-shadow: var(--shadow-sm);
     transition: transform 0.15s, box-shadow 0.15s;
     text-transform: uppercase;
-    letter-spacing: 0.05em;
+    letter-spacing: 0.04em;
+    min-height: 44px;
   }
   .btn:hover {
     transform: translate(-2px, -2px);
@@ -469,26 +548,118 @@
     transform: translate(1px, 1px);
     box-shadow: 2px 2px 0 0 var(--ink);
   }
+  .btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none !important;
+    box-shadow: var(--shadow-sm) !important;
+  }
   .btn.primary { background: var(--terracotta); color: var(--bg); }
   .btn.secondary { background: var(--mustard); color: var(--ink); }
   .btn.ghost { background: var(--paper); color: var(--ink); }
-  .btn.small { padding: 8px 16px; font-size: 12px; }
+  .btn.small { padding: 8px 14px; font-size: 12px; min-height: 36px; }
 
-  /* ============ TOPICS VIEW ============ */
+  /* ============ SESSION CONFIG ============ */
+  .session-config {
+    background: var(--paper);
+    border: 3px solid var(--ink);
+    border-radius: 20px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: var(--shadow-sm);
+  }
+  .config-row {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    flex-wrap: wrap;
+    margin-bottom: 14px;
+  }
+  .config-row:last-child { margin-bottom: 0; }
+  .config-row-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    opacity: 0.7;
+    min-width: 90px;
+  }
+  .include-chip {
+    padding: 8px 14px;
+    border: 2px solid var(--ink);
+    border-radius: 999px;
+    background: var(--cream);
+    cursor: pointer;
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    transition: all 0.15s;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    opacity: 0.55;
+    min-height: 36px;
+  }
+  .include-chip.included {
+    opacity: 1;
+    background: var(--paper);
+  }
+  .include-chip.included.s-mastered { background: var(--olive); color: var(--bg); }
+  .include-chip.included.s-familiar { background: var(--sky); color: var(--bg); }
+  .include-chip.included.s-new { background: var(--mustard); }
+  .include-chip.included.s-learning { background: var(--pink); }
+  .include-chip.included.s-struggling { background: var(--terracotta); color: var(--bg); }
+  .include-chip:hover { opacity: 1; }
+  .include-chip .count {
+    font-weight: 700;
+    font-size: 11px;
+  }
+  .toggle-group {
+    display: flex;
+    background: var(--cream);
+    border: 2px solid var(--ink);
+    border-radius: 999px;
+    padding: 3px;
+  }
+  .toggle-btn {
+    padding: 6px 14px;
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    border-radius: 999px;
+    min-height: 32px;
+  }
+  .toggle-btn.active {
+    background: var(--ink);
+    color: var(--bg);
+  }
+
+  .setup-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    opacity: 0.7;
+  }
+
+  /* ============ TOPICS ============ */
   .topics-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 28px;
+    margin-bottom: 22px;
     flex-wrap: wrap;
-    gap: 16px;
+    gap: 12px;
   }
   .topics-header h2 {
     font-family: 'Fraunces', serif;
-    font-size: 32px;
+    font-size: 28px;
     font-weight: 800;
   }
-  .topics-actions { display: flex; gap: 12px; flex-wrap: wrap; }
+  .topics-actions { display: flex; gap: 10px; flex-wrap: wrap; }
 
   .topic-grid {
     display: grid;
@@ -501,10 +672,11 @@
     background: var(--paper);
     border: 3px solid var(--ink);
     border-radius: 20px;
-    padding: 24px;
+    padding: 22px;
     box-shadow: var(--shadow);
     position: relative;
     transition: transform 0.15s;
+    cursor: pointer;
   }
   .topic-card:hover {
     transform: translate(-3px, -3px);
@@ -513,19 +685,17 @@
   .topic-card.selected {
     background: var(--mustard);
   }
-
   .topic-card-head {
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
-    margin-bottom: 16px;
+    margin-bottom: 14px;
   }
   .topic-checkbox {
     width: 28px;
     height: 28px;
     border: 3px solid var(--ink);
     border-radius: 8px;
-    cursor: pointer;
     display: grid;
     place-items: center;
     background: var(--paper);
@@ -546,7 +716,8 @@
     font-size: 22px;
     font-weight: 800;
     margin-bottom: 4px;
-    line-height: 1.1;
+    line-height: 1.15;
+    word-break: break-word;
   }
   .topic-meta {
     font-family: 'DM Mono', monospace;
@@ -554,9 +725,8 @@
     opacity: 0.6;
     text-transform: uppercase;
     letter-spacing: 0.1em;
-    margin-bottom: 16px;
+    margin-bottom: 14px;
   }
-
   .topic-progress {
     height: 8px;
     background: var(--cream);
@@ -571,12 +741,11 @@
     background: var(--olive);
     transition: width 0.4s;
   }
-
   .topic-stats {
     display: flex;
-    gap: 8px;
+    gap: 6px;
     font-family: 'DM Mono', monospace;
-    font-size: 11px;
+    font-size: 10px;
     flex-wrap: wrap;
   }
   .topic-stat {
@@ -589,12 +758,11 @@
     background: var(--terracotta);
     color: var(--bg);
   }
-
   .topic-card-actions {
     display: flex;
     gap: 8px;
-    margin-top: 16px;
-    padding-top: 16px;
+    margin-top: 14px;
+    padding-top: 14px;
     border-top: 2px dashed var(--ink);
   }
 
@@ -607,7 +775,7 @@
     box-shadow: var(--shadow);
   }
   .table-head {
-    padding: 20px 24px;
+    padding: 18px 20px;
     background: var(--ink);
     color: var(--bg);
     display: flex;
@@ -625,20 +793,22 @@
     background: var(--bg);
     color: var(--ink);
     border: 2px solid var(--bg);
-    padding: 8px 16px;
+    padding: 8px 14px;
     border-radius: 999px;
     font-family: 'DM Mono', monospace;
     font-size: 13px;
-    width: 240px;
+    width: 220px;
+    max-width: 100%;
+    min-height: 36px;
   }
   .table-search::placeholder { color: var(--ink); opacity: 0.5; }
 
   .filter-row {
-    padding: 16px 24px;
+    padding: 14px 20px;
     background: var(--cream);
     border-bottom: 2px solid var(--ink);
     display: flex;
-    gap: 12px;
+    gap: 8px;
     flex-wrap: wrap;
     align-items: center;
   }
@@ -651,6 +821,7 @@
     font-family: 'DM Mono', monospace;
     font-size: 12px;
     transition: all 0.15s;
+    min-height: 32px;
   }
   .filter-chip:hover { background: var(--mustard); }
   .filter-chip.active { background: var(--ink); color: var(--bg); }
@@ -661,16 +832,38 @@
   }
   thead th {
     background: var(--cream);
-    padding: 14px 16px;
+    padding: 12px 14px;
     text-align: left;
     font-family: 'DM Mono', monospace;
     font-size: 11px;
     text-transform: uppercase;
     letter-spacing: 0.1em;
     border-bottom: 2px solid var(--ink);
+    white-space: nowrap;
   }
+  .col-header {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .eye-toggle {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 2px 4px;
+    border-radius: 4px;
+    font-size: 14px;
+    opacity: 0.6;
+    transition: opacity 0.15s, background 0.15s;
+  }
+  .eye-toggle:hover {
+    opacity: 1;
+    background: rgba(0,0,0,0.08);
+  }
+  .eye-toggle.hidden { opacity: 1; color: var(--terracotta); }
+
   tbody td {
-    padding: 14px 16px;
+    padding: 12px 14px;
     border-bottom: 1px solid rgba(26,24,22,0.1);
     font-size: 15px;
     vertical-align: middle;
@@ -682,9 +875,27 @@
   .word-cell {
     font-family: 'Fraunces', serif;
     font-weight: 600;
-    font-size: 17px;
+    font-size: 16px;
+    word-break: break-word;
   }
-  .word-cell.es { font-style: italic; }
+  .word-cell.lang2 { font-style: italic; }
+  .cell-hidden {
+    color: transparent;
+    background: var(--cream);
+    border-radius: 6px;
+    user-select: none;
+    cursor: pointer;
+    transition: color 0.15s;
+  }
+  .cell-hidden::before {
+    content: '••••••';
+    color: var(--ink);
+    opacity: 0.3;
+    font-family: 'DM Mono', monospace;
+    font-style: normal;
+    letter-spacing: 0.2em;
+  }
+  .cell-hidden:hover::before { opacity: 0.6; }
 
   .badge {
     display: inline-block;
@@ -694,6 +905,7 @@
     font-family: 'DM Mono', monospace;
     font-size: 11px;
     background: var(--paper);
+    white-space: nowrap;
   }
   .badge.struggling {
     background: var(--terracotta);
@@ -704,14 +916,11 @@
     color: var(--bg);
   }
   .badge.new { background: var(--mustard); }
-  .badge.familiar {
-    background: var(--sky);
-    color: var(--bg);
-  }
+  .badge.familiar { background: var(--sky); color: var(--bg); }
 
   .row-actions {
     display: flex;
-    gap: 6px;
+    gap: 4px;
   }
   .icon-btn {
     background: var(--paper);
@@ -727,34 +936,31 @@
   .icon-btn:hover { background: var(--mustard); }
   .icon-btn.danger:hover { background: var(--terracotta); color: var(--bg); }
 
-  /* ============ IMPORT VIEW ============ */
+  /* ============ IMPORT ============ */
   .import-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 32px;
-  }
-  @media (max-width: 900px) {
-    .import-grid { grid-template-columns: 1fr; }
+    gap: 24px;
   }
 
   .import-panel {
     background: var(--paper);
     border: 3px solid var(--ink);
     border-radius: 20px;
-    padding: 32px;
+    padding: 28px;
     box-shadow: var(--shadow);
   }
   .import-panel h3 {
     font-family: 'Fraunces', serif;
-    font-size: 24px;
+    font-size: 22px;
     font-weight: 800;
-    margin-bottom: 8px;
+    margin-bottom: 6px;
   }
   .import-panel p {
     font-family: 'DM Mono', monospace;
     font-size: 12px;
     opacity: 0.7;
-    margin-bottom: 20px;
+    margin-bottom: 18px;
     line-height: 1.5;
   }
 
@@ -769,13 +975,13 @@
   }
   .file-drop:hover { background: var(--mustard); }
   .file-drop.dragover { background: var(--mustard); }
-  .file-drop .icon { font-size: 48px; line-height: 1; margin-bottom: 12px; }
+  .file-drop .icon { font-size: 44px; line-height: 1; margin-bottom: 10px; }
   .file-drop strong {
     display: block;
     font-family: 'Fraunces', serif;
     font-size: 20px;
     font-weight: 700;
-    margin-bottom: 6px;
+    margin-bottom: 4px;
   }
   .file-drop span {
     font-family: 'DM Mono', monospace;
@@ -785,9 +991,7 @@
     opacity: 0.6;
   }
 
-  .form-field {
-    margin-bottom: 16px;
-  }
+  .form-field { margin-bottom: 14px; }
   .form-field label {
     display: block;
     font-family: 'DM Mono', monospace;
@@ -803,8 +1007,9 @@
     border: 2px solid var(--ink);
     border-radius: 10px;
     font-family: 'Outfit', sans-serif;
-    font-size: 14px;
+    font-size: 15px;
     background: var(--cream);
+    min-height: 44px;
   }
   .form-field input:focus, .form-field select:focus, .form-field textarea:focus {
     outline: none;
@@ -812,7 +1017,7 @@
     box-shadow: var(--shadow-sm);
   }
   .form-field textarea {
-    min-height: 200px;
+    min-height: 180px;
     font-family: 'DM Mono', monospace;
     font-size: 13px;
     resize: vertical;
@@ -821,12 +1026,12 @@
   .format-example {
     background: var(--ink);
     color: var(--bg);
-    padding: 16px;
+    padding: 14px;
     border-radius: 10px;
     font-family: 'DM Mono', monospace;
     font-size: 12px;
     line-height: 1.7;
-    margin-bottom: 16px;
+    margin-bottom: 14px;
     white-space: pre;
     overflow-x: auto;
   }
@@ -839,30 +1044,140 @@
     display: none;
     place-items: center;
     z-index: 100;
-    padding: 20px;
+    padding: 16px;
+    overflow-y: auto;
   }
   .modal-backdrop.active { display: grid; }
   .modal {
     background: var(--bg);
     border: 3px solid var(--ink);
     border-radius: 20px;
-    padding: 32px;
+    padding: 28px;
     max-width: 480px;
     width: 100%;
     box-shadow: var(--shadow-lg);
+    margin: auto;
   }
   .modal h3 {
     font-family: 'Fraunces', serif;
-    font-size: 24px;
+    font-size: 22px;
     font-weight: 800;
-    margin-bottom: 16px;
+    margin-bottom: 14px;
   }
   .modal-actions {
     display: flex;
-    gap: 12px;
+    gap: 10px;
     justify-content: flex-end;
-    margin-top: 20px;
+    margin-top: 18px;
+    flex-wrap: wrap;
   }
+
+  .room-modal {
+    max-width: 560px;
+  }
+  .room-modal h2 {
+    font-family: 'Fraunces', serif;
+    font-size: 30px;
+    font-weight: 900;
+    margin-bottom: 6px;
+    line-height: 1.1;
+  }
+  .room-modal h2 em { color: var(--terracotta); font-style: italic; }
+  .room-modal .tagline {
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    opacity: 0.7;
+    margin-bottom: 20px;
+    line-height: 1.5;
+  }
+  .room-option {
+    background: var(--cream);
+    border: 2px solid var(--ink);
+    border-radius: 16px;
+    padding: 18px;
+    margin-bottom: 12px;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .room-option:hover {
+    background: var(--mustard);
+    transform: translate(-2px, -2px);
+    box-shadow: var(--shadow-sm);
+  }
+  .room-option h4 {
+    font-family: 'Fraunces', serif;
+    font-size: 18px;
+    font-weight: 800;
+    margin-bottom: 4px;
+  }
+  .room-option p {
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    opacity: 0.7;
+    margin: 0;
+  }
+  .room-input-wrap {
+    display: flex;
+    gap: 8px;
+    margin-top: 10px;
+  }
+  .room-input-wrap input {
+    flex: 1;
+    padding: 10px 14px;
+    border: 2px solid var(--ink);
+    border-radius: 10px;
+    font-family: 'DM Mono', monospace;
+    font-size: 14px;
+    background: var(--paper);
+    min-height: 40px;
+  }
+  .room-input-wrap .btn { min-height: 40px; padding: 8px 16px; }
+
+  .room-history {
+    margin-top: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    max-height: 220px;
+    overflow-y: auto;
+  }
+  .room-history-item {
+    background: var(--paper);
+    border: 2px solid var(--ink);
+    border-radius: 10px;
+    padding: 10px 14px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+  .room-history-item:hover { background: var(--mustard); }
+  .room-history-item .room-history-name {
+    font-family: 'DM Mono', monospace;
+    font-size: 13px;
+    font-weight: 600;
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .room-history-item .room-history-meta {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    opacity: 0.5;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+  }
+  .room-history-item .remove-btn {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 4px;
+    font-size: 16px;
+    opacity: 0.4;
+  }
+  .room-history-item .remove-btn:hover { opacity: 1; color: var(--terracotta); }
 
   /* ============ TOAST ============ */
   .toast {
@@ -872,7 +1187,7 @@
     transform: translateX(-50%) translateY(20px);
     background: var(--ink);
     color: var(--bg);
-    padding: 12px 24px;
+    padding: 12px 22px;
     border-radius: 999px;
     font-family: 'DM Mono', monospace;
     font-size: 13px;
@@ -881,6 +1196,8 @@
     transition: all 0.3s;
     z-index: 200;
     border: 2px solid var(--ink);
+    max-width: calc(100vw - 32px);
+    text-align: center;
   }
   .toast.show {
     opacity: 1;
@@ -889,243 +1206,76 @@
   .toast.success { background: var(--olive); }
   .toast.error { background: var(--terracotta); }
 
-  /* Settings buttons row */
-  .study-setup {
-    display: flex;
-    gap: 12px;
-    margin-bottom: 24px;
-    flex-wrap: wrap;
-    align-items: center;
-    padding: 16px;
-    background: var(--paper);
-    border: 2px solid var(--ink);
-    border-radius: 16px;
-  }
-  .setup-label {
-    font-family: 'DM Mono', monospace;
-    font-size: 11px;
-    text-transform: uppercase;
-    letter-spacing: 0.1em;
-    opacity: 0.6;
-  }
-  .toggle-group {
-    display: flex;
-    background: var(--cream);
-    border: 2px solid var(--ink);
-    border-radius: 999px;
-    padding: 3px;
-  }
-  .toggle-btn {
-    padding: 6px 14px;
-    font-family: 'DM Mono', monospace;
-    font-size: 11px;
-    text-transform: uppercase;
-    letter-spacing: 0.1em;
-    background: transparent;
-    border: none;
-    cursor: pointer;
-    border-radius: 999px;
-  }
-  .toggle-btn.active {
-    background: var(--ink);
-    color: var(--bg);
-  }
-
-  .session-config {
-    background: var(--paper);
-    border: 3px solid var(--ink);
-    border-radius: 20px;
-    padding: 24px;
-    margin-bottom: 24px;
-    box-shadow: var(--shadow-sm);
-  }
-  .config-row {
-    display: flex;
-    gap: 16px;
-    align-items: center;
-    flex-wrap: wrap;
-    margin-bottom: 16px;
-  }
-  .config-row:last-child { margin-bottom: 0; }
-  .config-row-label {
-    font-family: 'DM Mono', monospace;
-    font-size: 11px;
-    text-transform: uppercase;
-    letter-spacing: 0.1em;
-    opacity: 0.7;
-    min-width: 110px;
-  }
-  .include-chip {
-    padding: 8px 14px;
-    border: 2px solid var(--ink);
-    border-radius: 999px;
-    background: var(--cream);
-    cursor: pointer;
-    font-family: 'DM Mono', monospace;
-    font-size: 12px;
-    transition: all 0.15s;
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    opacity: 0.55;
-  }
-  .include-chip.included {
-    opacity: 1;
-    background: var(--paper);
-  }
-  .include-chip.included.s-mastered { background: var(--olive); color: var(--bg); }
-  .include-chip.included.s-familiar { background: var(--sky); color: var(--bg); }
-  .include-chip.included.s-new { background: var(--mustard); }
-  .include-chip.included.s-learning { background: var(--pink); }
-  .include-chip.included.s-struggling { background: var(--terracotta); color: var(--bg); }
-  .include-chip:hover { opacity: 1; }
-  .include-chip .count {
-    font-weight: 700;
-    font-size: 11px;
-  }
-
-  /* ============ SYNC / ROOM UI ============ */
-  .sync-bar {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 10px 16px;
-    background: var(--paper);
-    border: 2px solid var(--ink);
-    border-radius: 999px;
-    box-shadow: var(--shadow-sm);
-    font-family: 'DM Mono', monospace;
-    font-size: 12px;
-  }
-  .sync-dot {
-    width: 10px;
-    height: 10px;
-    border-radius: 50%;
-    background: #999;
-    flex-shrink: 0;
-  }
-  .sync-dot.online { background: #4CAF50; animation: pulse 2s ease-in-out infinite; }
-  .sync-dot.syncing { background: var(--mustard); animation: pulse 1s ease-in-out infinite; }
-  .sync-dot.offline { background: #999; }
-  .sync-dot.error { background: var(--terracotta); }
-  @keyframes pulse {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.4; }
-  }
-  .sync-bar .room-name {
-    font-weight: 600;
-    color: var(--terracotta);
-  }
-  .sync-bar button {
-    background: var(--ink);
-    color: var(--bg);
-    border: none;
-    padding: 4px 12px;
-    border-radius: 999px;
-    font-family: 'DM Mono', monospace;
-    font-size: 11px;
-    cursor: pointer;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-  }
-  .sync-bar button:hover { background: var(--terracotta); }
-
-  /* Room setup modal */
-  .room-modal {
-    max-width: 560px;
-  }
-  .room-modal h2 {
-    font-family: 'Fraunces', serif;
-    font-size: 32px;
-    font-weight: 900;
-    margin-bottom: 8px;
-  }
-  .room-modal h2 em { color: var(--terracotta); font-style: italic; }
-  .room-modal .room-tagline {
-    font-family: 'DM Mono', monospace;
-    font-size: 13px;
-    opacity: 0.7;
-    margin-bottom: 24px;
-    line-height: 1.5;
-  }
-  .room-modal .room-option {
-    background: var(--cream);
-    border: 2px solid var(--ink);
-    border-radius: 16px;
-    padding: 20px;
-    margin-bottom: 16px;
-    cursor: pointer;
-    transition: all 0.15s;
-  }
-  .room-modal .room-option:hover {
-    background: var(--mustard);
-    transform: translate(-2px, -2px);
-    box-shadow: var(--shadow-sm);
-  }
-  .room-modal .room-option h4 {
-    font-family: 'Fraunces', serif;
-    font-size: 20px;
-    font-weight: 800;
-    margin-bottom: 6px;
-  }
-  .room-modal .room-option p {
-    font-family: 'DM Mono', monospace;
-    font-size: 12px;
-    opacity: 0.7;
-    margin: 0;
-  }
-  .room-modal .room-input-wrap {
-    display: flex;
-    gap: 8px;
-    margin-top: 12px;
-  }
-  .room-modal .room-input-wrap input {
-    flex: 1;
-    padding: 10px 14px;
-    border: 2px solid var(--ink);
-    border-radius: 10px;
-    font-family: 'DM Mono', monospace;
-    font-size: 14px;
-    background: var(--paper);
-  }
-
-  .share-banner {
-    background: var(--mustard);
-    border: 2px solid var(--ink);
-    border-radius: 12px;
-    padding: 12px 16px;
-    margin-bottom: 20px;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    font-family: 'DM Mono', monospace;
-    font-size: 12px;
-  }
-  .share-banner .share-url {
-    flex: 1;
-    background: var(--bg);
-    border: 2px solid var(--ink);
-    border-radius: 8px;
-    padding: 6px 10px;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
-
-  /* Decorative elements */
-  .deco-star {
-    position: absolute;
-    pointer-events: none;
-    opacity: 0.15;
+  /* ============ MOBILE ============ */
+  @media (max-width: 900px) {
+    .import-grid { grid-template-columns: 1fr; }
   }
 
   @media (max-width: 700px) {
-    .app { padding: 20px; }
-    .brand h1 { font-size: 32px; }
-    .word { font-size: 40px; }
-    .face { padding: 30px 24px; }
-    .header { flex-direction: column; align-items: flex-start; }
-    .import-panel { padding: 24px; }
+    .app { padding: 20px 16px; }
+    .header { gap: 16px; padding-bottom: 20px; margin-bottom: 18px; }
+    .brand { gap: 12px; }
+    .brand-mark { width: 52px; height: 52px; font-size: 28px; }
+    .brand h1 { font-size: 28px; }
+    .brand p { font-size: 10px; }
+    .header-stats { width: 100%; }
+    .stat-pill { padding: 6px 12px; font-size: 11px; flex: 1; justify-content: center; min-width: 0; }
+    .stat-pill strong { font-size: 16px; }
+
+    .tabs { margin-bottom: 12px; }
+    .tab { padding: 10px 16px; font-size: 13px; }
+
+    .sync-bar { padding: 8px 12px; font-size: 11px; width: 100%; }
+    .sync-bar .room-name { max-width: 100px; }
+
+    .flashcard { height: 300px; }
+    .face { padding: 30px 20px; }
+    .word { font-size: 36px; }
+    .word-meta { font-size: 12px; }
+
+    .answer-btn { width: 72px; height: 72px; font-size: 28px; }
+
+    .study-controls h2 { font-size: 22px; }
+    .progress-info { font-size: 11px; padding: 6px 12px; }
+
+    .config-row { gap: 8px; }
+    .config-row-label { min-width: 100%; }
+
+    .session-end h2 { font-size: 32px; }
+    .result-box { padding: 12px 16px; }
+    .result-box .num { font-size: 30px; }
+
+    .topic-grid { grid-template-columns: 1fr; gap: 14px; }
+    .topic-card { padding: 18px; }
+
+    .table-head { padding: 14px 16px; }
+    .table-head h3 { font-size: 18px; }
+    .table-search { width: 100%; }
+    .filter-row { padding: 12px 16px; }
+    thead th { padding: 10px 12px; font-size: 10px; }
+    tbody td { padding: 10px 12px; font-size: 14px; }
+    .word-cell { font-size: 15px; }
+    .badge { font-size: 10px; padding: 2px 8px; }
+
+    .import-panel { padding: 20px; }
+    .import-panel h3 { font-size: 19px; }
+
+    .modal { padding: 22px; border-radius: 16px; }
+    .room-modal h2 { font-size: 24px; }
+    .room-option { padding: 14px; }
+    .room-option h4 { font-size: 16px; }
+    .room-input-wrap { flex-direction: column; }
+
+    .answer-row { gap: 32px; }
+
+    .empty-state { padding: 40px 20px; }
+    .empty-state h3 { font-size: 22px; }
+  }
+
+  @media (max-width: 400px) {
+    .word { font-size: 30px; }
+    .flashcard { height: 280px; }
+    .brand h1 { font-size: 24px; }
   }
 </style>
 </head>
@@ -1133,72 +1283,70 @@
 
 <div class="app">
 
-  <!-- ============ HEADER ============ -->
+  <!-- HEADER -->
   <header class="header">
     <div class="brand">
       <div class="brand-mark">¡</div>
       <div>
         <h1>vamos <em>a</em> aprender</h1>
-        <p>// карточки испанского · personal study lab</p>
+        <p>// flashcards · personal study lab</p>
       </div>
     </div>
-    <div class="header-stats" id="headerStats">
-      <!-- filled by JS -->
-    </div>
+    <div class="header-stats" id="headerStats"></div>
   </header>
 
-  <!-- ============ TABS ============ -->
+  <!-- TABS -->
   <nav class="tabs">
-    <button class="tab active" data-view="study">Учить <span class="count" id="cntStudy">0</span></button>
-    <button class="tab" data-view="topics">Темы <span class="count" id="cntTopics">0</span></button>
-    <button class="tab" data-view="words">Все слова <span class="count" id="cntWords">0</span></button>
-    <button class="tab" data-view="import">+ Загрузить</button>
+    <button class="tab active" data-view="study">Study <span class="count" id="cntStudy">0</span></button>
+    <button class="tab" data-view="topics">Topics <span class="count" id="cntTopics">0</span></button>
+    <button class="tab" data-view="words">All words <span class="count" id="cntWords">0</span></button>
+    <button class="tab" data-view="import">+ Import</button>
   </nav>
 
-  <!-- Sync bar -->
-  <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 24px; flex-wrap: wrap;">
+  <!-- SYNC ROW -->
+  <div class="sync-row">
     <div class="sync-bar" id="syncBar" style="display: none;">
       <div class="sync-dot" id="syncDot"></div>
-      <span>Комната: <span class="room-name" id="syncRoomName">—</span></span>
-      <span id="syncStatus" style="opacity: 0.5;">подключение...</span>
-      <button id="copyShareLink">📋 Поделиться</button>
-      <button id="leaveRoom" style="background: var(--terracotta);">Выйти</button>
+      <span>Room: <span class="room-name" id="syncRoomName">—</span></span>
+      <span id="syncStatus" style="opacity: 0.5;">connecting...</span>
+      <button id="copyShareLink">📋 Share</button>
+      <button id="leaveRoom" class="danger">Leave</button>
     </div>
-    <button class="btn ghost small" id="joinRoomBtn" style="display: none;">🌐 Подключиться к комнате</button>
+    <button class="btn ghost small" id="joinRoomBtn" style="display: none;">🌐 Connect a room</button>
   </div>
 
-  <!-- ============ VIEW: STUDY ============ -->
+  <!-- VIEW: STUDY -->
   <section class="view active" id="view-study">
     <div id="studyContent"></div>
   </section>
 
-  <!-- ============ VIEW: TOPICS ============ -->
+  <!-- VIEW: TOPICS -->
   <section class="view" id="view-topics">
     <div class="topics-header">
-      <h2>Темы для изучения</h2>
+      <h2>Topics</h2>
       <div class="topics-actions">
-        <button class="btn ghost small" id="selectAllTopics">Выбрать все</button>
-        <button class="btn ghost small" id="clearAllTopics">Снять выбор</button>
-        <button class="btn primary" id="startSelectedSession">→ Учить выбранное</button>
+        <button class="btn ghost small" id="selectAllTopics">Select all</button>
+        <button class="btn ghost small" id="clearAllTopics">Clear</button>
+        <button class="btn primary" id="startSelectedSession">→ Study selected</button>
       </div>
     </div>
     <div class="topic-grid" id="topicGrid"></div>
   </section>
 
-  <!-- ============ VIEW: WORDS ============ -->
+  <!-- VIEW: WORDS -->
   <section class="view" id="view-words">
     <div class="table-wrap">
       <div class="table-head">
-        <h3>Словарь</h3>
-        <input type="text" class="table-search" id="wordSearch" placeholder="поиск по слову или переводу...">
+        <h3>Vocabulary</h3>
+        <input type="text" class="table-search" id="wordSearch" placeholder="search by word...">
       </div>
       <div class="filter-row">
-        <span class="setup-label">Фильтр:</span>
-        <button class="filter-chip active" data-filter="all">Все</button>
-        <button class="filter-chip" data-filter="struggling">⚠ Сложные</button>
-        <button class="filter-chip" data-filter="familiar">◐ Знакомо</button>
-        <button class="filter-chip" data-filter="mastered">✓ Выучены</button>
-        <button class="filter-chip" data-filter="new">⊙ Новые</button>
+        <span class="setup-label">Filter:</span>
+        <button class="filter-chip active" data-filter="all">All</button>
+        <button class="filter-chip" data-filter="struggling">⚠ Struggling</button>
+        <button class="filter-chip" data-filter="familiar">◐ Familiar</button>
+        <button class="filter-chip" data-filter="mastered">✓ Mastered</button>
+        <button class="filter-chip" data-filter="new">⊙ New</button>
         <span style="margin-left:auto" class="setup-label" id="rowCount"></span>
       </div>
       <div style="overflow-x: auto;">
@@ -1206,13 +1354,23 @@
           <thead>
             <tr>
               <th style="width: 30px;">#</th>
-              <th>Русский</th>
-              <th>Español</th>
-              <th>Тема</th>
-              <th>Статус</th>
-              <th style="text-align:center">Ошибок</th>
-              <th style="text-align:center">Подряд ✓</th>
-              <th style="width: 100px;">Действия</th>
+              <th>
+                <span class="col-header">
+                  <span id="lang1Header">Language 1</span>
+                  <button class="eye-toggle" id="eyeLang1" title="Hide column">👁</button>
+                </span>
+              </th>
+              <th>
+                <span class="col-header">
+                  <span id="lang2Header">Language 2</span>
+                  <button class="eye-toggle" id="eyeLang2" title="Hide column">👁</button>
+                </span>
+              </th>
+              <th>Topic</th>
+              <th>Status</th>
+              <th style="text-align:center">Mistakes</th>
+              <th style="text-align:center">Streak ✓</th>
+              <th style="width: 100px;">Actions</th>
             </tr>
           </thead>
           <tbody id="wordsBody"></tbody>
@@ -1221,120 +1379,142 @@
     </div>
   </section>
 
-  <!-- ============ VIEW: IMPORT ============ -->
+  <!-- VIEW: IMPORT -->
   <section class="view" id="view-import">
     <div class="import-grid">
-      <!-- File upload -->
       <div class="import-panel">
-        <h3>📁 Загрузить файл</h3>
-        <p>CSV или TSV файл. Колонки: русский, испанский, тема (опционально)</p>
+        <h3>📁 Upload a file</h3>
+        <p>CSV or TSV file. Columns: language 1, language 2, topic (optional)</p>
 
-        <div class="format-example">русский,испанский,тема
-дом,casa,Базовое
-кошка,gato,Животные
-быстро,rápido,Наречия</div>
+        <div class="format-example">lang1,lang2,topic
+house,casa,Basics
+cat,gato,Animals
+quickly,rápido,Adverbs</div>
 
         <div class="file-drop" id="fileDrop">
           <div class="icon">📤</div>
-          <strong>Перетащите CSV сюда</strong>
-          <span>или нажмите чтобы выбрать файл</span>
+          <strong>Drop CSV here</strong>
+          <span>or tap to choose a file</span>
         </div>
         <input type="file" id="fileInput" accept=".csv,.tsv,.txt" hidden>
       </div>
 
-      <!-- Paste -->
       <div class="import-panel">
-        <h3>✏️ Вставить таблицу</h3>
-        <p>Скопируйте из Google Sheets / Excel. Разделители: tab, запятая или точка с запятой</p>
+        <h3>✏️ Paste a table</h3>
+        <p>Copy from Google Sheets / Excel. Delimiters: tab, comma or semicolon</p>
 
         <div class="form-field">
-          <label>Название темы (если не указано в таблице)</label>
-          <input type="text" id="pasteTopic" placeholder="например: Еда, Глаголы движения...">
+          <label>Topic name (if not in the table)</label>
+          <input type="text" id="pasteTopic" placeholder="e.g. Food, Verbs of motion...">
         </div>
 
         <div class="form-field">
-          <label>Эмодзи темы (опционально)</label>
+          <label>Topic emoji (optional)</label>
           <input type="text" id="pasteEmoji" placeholder="🍕" maxlength="2">
         </div>
 
         <div class="form-field">
-          <label>Данные</label>
-          <textarea id="pasteArea" placeholder="дом&#9;casa&#10;кошка&#9;gato&#10;..."></textarea>
+          <label>Data</label>
+          <textarea id="pasteArea" placeholder="house&#9;casa&#10;cat&#9;gato&#10;..."></textarea>
         </div>
 
-        <button class="btn primary" id="importPasted">Добавить слова →</button>
+        <button class="btn primary" id="importPasted">Add words →</button>
       </div>
     </div>
 
-    <!-- Quick add single word -->
-    <div class="import-panel" style="margin-top: 32px;">
-      <h3>⚡ Быстрое добавление</h3>
-      <p>Добавить одно слово вручную</p>
-      <div style="display: grid; grid-template-columns: 1fr 1fr 1fr auto; gap: 12px; align-items: end;">
+    <div class="import-panel" style="margin-top: 24px;">
+      <h3>⚡ Quick add</h3>
+      <p>Add a single word manually</p>
+      <div style="display: grid; grid-template-columns: 1fr 1fr 1fr auto; gap: 10px; align-items: end;">
         <div class="form-field" style="margin: 0;">
-          <label>Русский</label>
-          <input type="text" id="quickRu">
+          <label>Language 1</label>
+          <input type="text" id="quickLang1">
         </div>
         <div class="form-field" style="margin: 0;">
-          <label>Español</label>
-          <input type="text" id="quickEs">
+          <label>Language 2</label>
+          <input type="text" id="quickLang2">
         </div>
         <div class="form-field" style="margin: 0;">
-          <label>Тема</label>
+          <label>Topic</label>
           <select id="quickTopic"></select>
         </div>
-        <button class="btn primary" id="quickAdd">+ Добавить</button>
+        <button class="btn primary" id="quickAdd">+ Add</button>
       </div>
     </div>
 
-    <!-- Data management -->
-    <div class="import-panel" style="margin-top: 32px;">
-      <h3>🗂 Управление данными</h3>
-      <p>Экспорт, сброс и демо-данные</p>
-      <div style="display: flex; gap: 12px; flex-wrap: wrap;">
-        <button class="btn secondary" id="exportData">⬇ Экспорт CSV</button>
-        <button class="btn ghost" id="loadDemo">+ Загрузить демо-набор</button>
-        <button class="btn ghost" id="resetData" style="margin-left: auto;">⌫ Сбросить всё</button>
+    <div class="import-panel" style="margin-top: 24px;">
+      <h3>🏷 Language labels</h3>
+      <p>Customize what's shown in tables and on cards (default: Language 1 / Language 2)</p>
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+        <div class="form-field" style="margin: 0;">
+          <label>Language 1 label</label>
+          <input type="text" id="lang1Input" placeholder="e.g. English, Russian">
+        </div>
+        <div class="form-field" style="margin: 0;">
+          <label>Language 2 label</label>
+          <input type="text" id="lang2Input" placeholder="e.g. Spanish, French">
+        </div>
+      </div>
+      <button class="btn secondary" id="saveLangs" style="margin-top: 12px;">Save labels</button>
+    </div>
+
+    <div class="import-panel" style="margin-top: 24px;">
+      <h3>🗂 Manage data</h3>
+      <p>Export, reset, demo data</p>
+      <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+        <button class="btn secondary" id="exportData">⬇ Export CSV</button>
+        <button class="btn ghost" id="loadDemo">+ Load demo set</button>
+        <button class="btn ghost" id="resetData" style="margin-left: auto;">⌫ Reset all</button>
       </div>
     </div>
   </section>
 </div>
 
-<!-- Modal -->
+<!-- Generic confirm modal -->
 <div class="modal-backdrop" id="modal">
   <div class="modal">
-    <h3 id="modalTitle">Подтверждение</h3>
+    <h3 id="modalTitle">Confirm</h3>
     <p id="modalText" style="font-family: 'DM Mono', monospace; font-size: 13px; opacity: 0.8;"></p>
     <div class="modal-actions">
-      <button class="btn ghost" id="modalCancel">Отмена</button>
-      <button class="btn primary" id="modalConfirm">Подтвердить</button>
+      <button class="btn ghost" id="modalCancel">Cancel</button>
+      <button class="btn primary" id="modalConfirm">Confirm</button>
     </div>
   </div>
 </div>
 
-<!-- Room setup modal -->
+<!-- Room modal -->
 <div class="modal-backdrop" id="roomModal">
   <div class="modal room-modal">
-    <h2>¡<em>Hola</em>! Совместное изучение</h2>
-    <p class="room-tagline">Создай комнату или подключись к существующей — все участники видят и редактируют одни и те же слова в реальном времени.</p>
+    <h2>¡<em>Hola</em>! Sync & share</h2>
+    <p class="tagline">Create a room or join an existing one. All members see and edit the same words in real time.</p>
 
-    <div class="room-option" id="optCreate">
-      <h4>🌟 Создать новую комнату</h4>
-      <p>Случайное имя, ты сможешь поделиться ссылкой</p>
-    </div>
-
-    <div class="room-option" id="optJoin" style="cursor: default;">
-      <h4>🔗 Подключиться к существующей</h4>
-      <p>Введи имя комнаты (или открой ссылку, которой с тобой поделились)</p>
+    <div class="room-option" id="optCreate" style="cursor: default;">
+      <h4>🌟 Create a new room</h4>
+      <p>Pick a name — others can join with it later</p>
       <div class="room-input-wrap">
-        <input type="text" id="roomNameInput" placeholder="например: anya-spanish" autocomplete="off">
-        <button class="btn primary" id="joinRoomConfirm">Войти →</button>
+        <input type="text" id="createRoomInput" placeholder="e.g. anya-spanish" autocomplete="off">
+        <button class="btn primary" id="createRoomConfirm">Create →</button>
       </div>
     </div>
 
+    <div class="room-option" id="optJoin" style="cursor: default;">
+      <h4>🔗 Join an existing room</h4>
+      <p>Enter a room name (or open a link someone shared)</p>
+      <div class="room-input-wrap">
+        <input type="text" id="joinRoomInput" placeholder="room name" autocomplete="off">
+        <button class="btn primary" id="joinRoomConfirm">Join →</button>
+      </div>
+    </div>
+
+    <div class="room-option" id="optHistory" style="cursor: default; display: none;">
+      <h4>📚 Recent rooms</h4>
+      <p>Rooms you've connected to before</p>
+      <div class="room-history" id="roomHistoryList"></div>
+    </div>
+
     <div class="room-option" id="optSolo">
-      <h4>🔒 Учить одной (без синхронизации)</h4>
-      <p>Только локально, как раньше. Можно подключить комнату позже.</p>
+      <h4>🔒 Study alone (no sync)</h4>
+      <p>Local only — you can connect a room anytime later</p>
     </div>
   </div>
 </div>
@@ -1344,7 +1524,7 @@
 
 <script type="module">
 // ============================================
-// FIREBASE SETUP
+// FIREBASE
 // ============================================
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-app.js";
 import {
@@ -1365,24 +1545,28 @@ const firebaseApp = initializeApp(firebaseConfig);
 const db = getFirestore(firebaseApp);
 
 // ============================================
-// STATE & STORAGE
+// STATE
 // ============================================
-const STORAGE_KEY = 'vamos_spanish_app_v1';
-const ROOM_KEY = 'vamos_spanish_room';
+const STORAGE_KEY = 'vamos_app_v2';
+const ROOM_KEY = 'vamos_room';
+const ROOM_HISTORY_KEY = 'vamos_room_history';
+const LANG_LABELS_KEY = 'vamos_lang_labels';
+const COL_VIS_KEY = 'vamos_col_visibility';
 
 let state = {
-  words: [],     // {id, ru, es, topicId, mistakes, streakCorrect, lastSeen, status}
-  topics: [],    // {id, name, emoji, color}
+  words: [],
+  topics: [],
   selectedTopics: new Set(),
-  excludeStatuses: new Set(), // statuses to exclude from session ('mastered', 'familiar', etc.)
+  excludeStatuses: new Set(),
   session: null,
   filter: 'all',
   search: '',
-  direction: 'ru-es', // or 'es-ru'
-  room: null,         // active room id (null = local-only mode)
-  syncStatus: 'offline', // offline | syncing | online | error
-  unsubscribe: null,    // firestore listener unsubscribe fn
-  lastWriteFromMe: 0,   // timestamp of last local write to ignore echo
+  direction: 'l1-l2', // l1 → l2 or l2 → l1
+  langLabels: { l1: 'Language 1', l2: 'Language 2' },
+  colVisibility: { l1: true, l2: true },
+  room: null,
+  syncStatus: 'offline',
+  unsubscribe: null,
   saveTimer: null,
   clientId: null
 };
@@ -1390,23 +1574,21 @@ let state = {
 const TOPIC_COLORS = ['#E85D3C', '#F4B942', '#6B7F3A', '#6B3FA0', '#4A90B8', '#F4A8A0'];
 const DEFAULT_EMOJIS = ['📚', '✨', '🌟', '🎯', '💡', '🔥', '🌿', '🍋', '🎨', '🌊'];
 
-// Generate a stable client id for this browser
 state.clientId = localStorage.getItem('vamos_client_id');
 if (!state.clientId) {
   state.clientId = Math.random().toString(36).slice(2, 12);
   localStorage.setItem('vamos_client_id', state.clientId);
 }
 
+// ============================================
+// STORAGE
+// ============================================
 function save() {
-  // Always cache locally
   localStorage.setItem(STORAGE_KEY, JSON.stringify({
     words: state.words,
     topics: state.topics
   }));
-  // Push to Firestore if in a room (debounced)
-  if (state.room) {
-    scheduleCloudSave();
-  }
+  if (state.room) scheduleCloudSave();
 }
 
 function load() {
@@ -1418,10 +1600,49 @@ function load() {
       state.topics = d.topics || [];
     }
   } catch (e) { console.error(e); }
+  // Load language labels
+  try {
+    const labels = JSON.parse(localStorage.getItem(LANG_LABELS_KEY) || 'null');
+    if (labels && labels.l1) state.langLabels = labels;
+  } catch (e) {}
+  // Load column visibility
+  try {
+    const vis = JSON.parse(localStorage.getItem(COL_VIS_KEY) || 'null');
+    if (vis) state.colVisibility = vis;
+  } catch (e) {}
 }
 
 function uid() {
   return Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
+}
+
+function escapeHtml(s) {
+  return String(s).replace(/[&<>"']/g, m => ({
+    '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+  }[m]));
+}
+
+// ============================================
+// ROOM HISTORY
+// ============================================
+function getRoomHistory() {
+  try {
+    return JSON.parse(localStorage.getItem(ROOM_HISTORY_KEY) || '[]');
+  } catch (e) { return []; }
+}
+
+function addRoomToHistory(name) {
+  let history = getRoomHistory();
+  history = history.filter(r => r.name !== name);
+  history.unshift({ name, lastVisit: Date.now() });
+  history = history.slice(0, 10);
+  localStorage.setItem(ROOM_HISTORY_KEY, JSON.stringify(history));
+}
+
+function removeRoomFromHistory(name) {
+  let history = getRoomHistory();
+  history = history.filter(r => r.name !== name);
+  localStorage.setItem(ROOM_HISTORY_KEY, JSON.stringify(history));
 }
 
 // ============================================
@@ -1431,15 +1652,13 @@ function setSyncStatus(status, text) {
   state.syncStatus = status;
   const dot = document.getElementById('syncDot');
   const statusEl = document.getElementById('syncStatus');
-  if (dot) {
-    dot.className = 'sync-dot ' + status;
-  }
+  if (dot) dot.className = 'sync-dot ' + status;
   if (statusEl) {
     const texts = {
-      offline: 'не подключено',
-      syncing: 'синхронизация...',
-      online: 'в сети ✓',
-      error: 'ошибка ⚠'
+      offline: 'offline',
+      syncing: 'syncing...',
+      online: 'live ✓',
+      error: 'error ⚠'
     };
     statusEl.textContent = text || texts[status] || status;
   }
@@ -1459,7 +1678,6 @@ function renderSyncBar() {
   }
 }
 
-// Normalize room name (lowercase, alphanumeric + dashes)
 function normalizeRoomName(name) {
   return String(name || '').trim().toLowerCase()
     .replace(/\s+/g, '-')
@@ -1467,23 +1685,13 @@ function normalizeRoomName(name) {
     .slice(0, 40);
 }
 
-function generateRoomName() {
-  const adjectives = ['azul', 'roja', 'verde', 'feliz', 'rapida', 'dulce', 'magica', 'brillante'];
-  const nouns = ['gato', 'sol', 'luna', 'flor', 'mar', 'pajaro', 'estrella', 'rio'];
-  const a = adjectives[Math.floor(Math.random() * adjectives.length)];
-  const n = nouns[Math.floor(Math.random() * nouns.length)];
-  const num = Math.floor(Math.random() * 1000);
-  return `${a}-${n}-${num}`;
-}
-
 async function joinRoom(roomName, options = {}) {
   const normalized = normalizeRoomName(roomName);
   if (!normalized) {
-    toast('Некорректное имя комнаты', 'error');
+    toast('Invalid room name', 'error');
     return false;
   }
 
-  // Unsubscribe previous listener if any
   if (state.unsubscribe) {
     state.unsubscribe();
     state.unsubscribe = null;
@@ -1506,10 +1714,8 @@ async function joinRoom(roomName, options = {}) {
       const hasRemoteData = remoteWords.length > 0 || remoteTopics.length > 0;
 
       if (hasLocalData && hasRemoteData && !options.skipMergePrompt) {
-        // Ask user how to handle conflict
         const choice = await askMergeChoice(state.words.length, remoteWords.length);
         if (choice === 'cancel') {
-          // Roll back room state
           state.room = null;
           localStorage.removeItem(ROOM_KEY);
           renderSyncBar();
@@ -1518,7 +1724,6 @@ async function joinRoom(roomName, options = {}) {
           state.words = remoteWords;
           state.topics = remoteTopics;
         } else if (choice === 'merge') {
-          // Merge: combine topics and words, avoiding duplicates
           const mergedTopics = [...remoteTopics];
           const topicNameMap = new Map(mergedTopics.map(t => [t.name.toLowerCase(), t]));
           state.topics.forEach(t => {
@@ -1528,11 +1733,10 @@ async function joinRoom(roomName, options = {}) {
             }
           });
           const mergedWords = [...remoteWords];
-          const wordKey = w => `${w.ru.toLowerCase()}|${w.es.toLowerCase()}`;
+          const wordKey = w => `${(w.l1 || w.ru || '').toLowerCase()}|${(w.l2 || w.es || '').toLowerCase()}`;
           const wordSet = new Set(mergedWords.map(wordKey));
           state.words.forEach(w => {
             if (!wordSet.has(wordKey(w))) {
-              // Re-map topic id if topic was matched by name
               const localTopic = state.topics.find(t => t.id === w.topicId);
               if (localTopic) {
                 const mergedTopic = topicNameMap.get(localTopic.name.toLowerCase());
@@ -1544,15 +1748,13 @@ async function joinRoom(roomName, options = {}) {
           });
           state.topics = mergedTopics;
           state.words = mergedWords;
-          // Push merged back
           await setDoc(roomRef, {
             words: state.words,
             topics: state.topics,
             updatedAt: Date.now(),
             updatedBy: state.clientId
           });
-        } else { // 'local'
-          // Keep local, push it to room
+        } else {
           await setDoc(roomRef, {
             words: state.words,
             topics: state.topics,
@@ -1561,9 +1763,9 @@ async function joinRoom(roomName, options = {}) {
           });
         }
       } else {
-        state.words = remoteWords;
+        state.words = migrateWords(remoteWords);
         state.topics = remoteTopics;
-        toast('Подключено — данные из комнаты загружены', 'success');
+        if (hasRemoteData) toast('Connected — loaded room data', 'success');
       }
 
       localStorage.setItem(STORAGE_KEY, JSON.stringify({
@@ -1571,17 +1773,15 @@ async function joinRoom(roomName, options = {}) {
         topics: state.topics
       }));
     } else {
-      // New room — push current local data
       await setDoc(roomRef, {
         words: state.words,
         topics: state.topics,
         updatedAt: Date.now(),
         updatedBy: state.clientId
       });
-      toast('Создана новая комната', 'success');
+      toast('New room created', 'success');
     }
 
-    // Subscribe to real-time updates
     state.unsubscribe = onSnapshot(roomRef, (snap) => {
       if (!snap.exists()) return;
       const data = snap.data();
@@ -1589,76 +1789,40 @@ async function joinRoom(roomName, options = {}) {
         setSyncStatus('online');
         return;
       }
-      state.words = data.words || [];
+      state.words = migrateWords(data.words || []);
       state.topics = data.topics || [];
       localStorage.setItem(STORAGE_KEY, JSON.stringify({
         words: state.words,
         topics: state.topics
       }));
       setSyncStatus('online');
-      renderHeaderStats();
-      const activeView = document.querySelector('.view.active').id;
-      if (activeView === 'view-topics') renderTopics();
-      else if (activeView === 'view-words') renderWordsTable();
-      else if (activeView === 'view-study' && !state.session) renderStudyView();
-      refreshQuickTopicSelect();
-      toast('Обновлено другим участником', 'success');
+      renderAll();
+      toast('Updated by another member', 'success');
     }, (err) => {
       console.error('Firestore error:', err);
       setSyncStatus('error');
-      toast('Ошибка синхронизации', 'error');
+      toast('Sync error', 'error');
     });
 
     setSyncStatus('online');
-    renderHeaderStats();
-    renderTopics();
-    renderWordsTable();
-    if (!state.session) renderStudyView();
-    refreshQuickTopicSelect();
+    addRoomToHistory(normalized);
+    renderAll();
     return true;
   } catch (err) {
     console.error('joinRoom error:', err);
     setSyncStatus('error');
-    toast('Не удалось подключиться: ' + err.message, 'error');
+    toast('Could not connect: ' + err.message, 'error');
     return false;
   }
 }
 
-// Show a custom prompt for merge choice
-function askMergeChoice(localCount, remoteCount) {
-  return new Promise((resolve) => {
-    const html = `
-      <div class="modal room-modal">
-        <h2>Что делать с данными?</h2>
-        <p class="room-tagline">У тебя локально <strong>${localCount}</strong> слов, а в комнате уже <strong>${remoteCount}</strong>. Выбери:</p>
-        <div class="room-option" data-choice="remote">
-          <h4>☁️ Взять из комнаты</h4>
-          <p>Локальные данные будут заменены (на этом устройстве)</p>
-        </div>
-        <div class="room-option" data-choice="local">
-          <h4>📤 Загрузить мои</h4>
-          <p>Перезаписать комнату моими словами (для всех участников!)</p>
-        </div>
-        <div class="room-option" data-choice="merge">
-          <h4>🔀 Объединить</h4>
-          <p>Соединить оба набора, дубликаты по словам исключатся</p>
-        </div>
-        <div class="modal-actions">
-          <button class="btn ghost" data-choice="cancel">Отмена</button>
-        </div>
-      </div>
-    `;
-    const backdrop = document.createElement('div');
-    backdrop.className = 'modal-backdrop active';
-    backdrop.innerHTML = html;
-    document.body.appendChild(backdrop);
-    backdrop.querySelectorAll('[data-choice]').forEach(el => {
-      el.addEventListener('click', () => {
-        const choice = el.dataset.choice;
-        backdrop.remove();
-        resolve(choice);
-      });
-    });
+function migrateWords(words) {
+  // Migrate from legacy ru/es format to l1/l2
+  return words.map(w => {
+    if (w.l1 === undefined && w.ru !== undefined) {
+      return { ...w, l1: w.ru, l2: w.es };
+    }
+    return w;
   });
 }
 
@@ -1669,12 +1833,11 @@ function leaveRoom() {
   }
   state.room = null;
   localStorage.removeItem(ROOM_KEY);
-  // Remove room param from URL
   const url = new URL(window.location.href);
   url.searchParams.delete('room');
   history.replaceState({}, '', url);
   renderSyncBar();
-  toast('Вышла из комнаты');
+  toast('Left the room');
 }
 
 function scheduleCloudSave() {
@@ -1704,6 +1867,43 @@ function buildShareLink() {
   return url.toString();
 }
 
+function askMergeChoice(localCount, remoteCount) {
+  return new Promise((resolve) => {
+    const html = `
+      <div class="modal room-modal">
+        <h2>Choose what to do</h2>
+        <p class="tagline">You have <strong>${localCount}</strong> words locally, the room has <strong>${remoteCount}</strong>. Pick one:</p>
+        <div class="room-option" data-choice="remote">
+          <h4>☁️ Use room data</h4>
+          <p>Replace local data with what's in the room (on this device only)</p>
+        </div>
+        <div class="room-option" data-choice="local">
+          <h4>📤 Upload mine</h4>
+          <p>Overwrite the room with my local data (affects all members!)</p>
+        </div>
+        <div class="room-option" data-choice="merge">
+          <h4>🔀 Merge both</h4>
+          <p>Combine sets, skip duplicate words</p>
+        </div>
+        <div class="modal-actions">
+          <button class="btn ghost" data-choice="cancel">Cancel</button>
+        </div>
+      </div>
+    `;
+    const backdrop = document.createElement('div');
+    backdrop.className = 'modal-backdrop active';
+    backdrop.innerHTML = html;
+    document.body.appendChild(backdrop);
+    backdrop.querySelectorAll('[data-choice]').forEach(el => {
+      el.addEventListener('click', () => {
+        const choice = el.dataset.choice;
+        backdrop.remove();
+        resolve(choice);
+      });
+    });
+  });
+}
+
 // ============================================
 // WORD MANAGEMENT
 // ============================================
@@ -1711,29 +1911,28 @@ function getWordStatus(w) {
   if (w.mistakes >= 2 && w.streakCorrect < 2) return 'struggling';
   if (w.streakCorrect >= 3) return 'mastered';
   if (w.lastSeen === null) return 'new';
-  // After at least one correct answer but not yet mastered
   if (w.streakCorrect >= 1) return 'familiar';
   return 'learning';
 }
 
 function getStatusBadge(status) {
   const map = {
-    struggling: { cls: 'struggling', text: '⚠ сложное' },
-    mastered: { cls: 'mastered', text: '✓ выучено' },
-    familiar: { cls: 'familiar', text: '◐ знакомо' },
-    new: { cls: 'new', text: '⊙ новое' },
-    learning: { cls: '', text: '↻ учится' }
+    struggling: { cls: 'struggling', text: '⚠ struggling' },
+    mastered: { cls: 'mastered', text: '✓ mastered' },
+    familiar: { cls: 'familiar', text: '◐ familiar' },
+    new: { cls: 'new', text: '⊙ new' },
+    learning: { cls: '', text: '↻ learning' }
   };
   return map[status];
 }
 
-function addWord(ru, es, topicId) {
-  ru = ru.trim();
-  es = es.trim();
-  if (!ru || !es) return null;
+function addWord(l1, l2, topicId) {
+  l1 = l1.trim();
+  l2 = l2.trim();
+  if (!l1 || !l2) return null;
   const word = {
     id: uid(),
-    ru, es,
+    l1, l2,
     topicId,
     mistakes: 0,
     streakCorrect: 0,
@@ -1745,7 +1944,7 @@ function addWord(ru, es, topicId) {
 }
 
 function ensureTopic(name, emoji) {
-  if (!name) name = 'Без темы';
+  if (!name) name = 'Uncategorized';
   let t = state.topics.find(x => x.name.toLowerCase() === name.toLowerCase());
   if (!t) {
     t = {
@@ -1774,9 +1973,22 @@ document.querySelectorAll('.tab').forEach(tab => {
     if (v === 'topics') renderTopics();
     if (v === 'words') renderWordsTable();
     if (v === 'study') renderStudyView();
-    if (v === 'import') refreshQuickTopicSelect();
+    if (v === 'import') {
+      refreshQuickTopicSelect();
+      document.getElementById('lang1Input').value = state.langLabels.l1;
+      document.getElementById('lang2Input').value = state.langLabels.l2;
+    }
   });
 });
+
+function renderAll() {
+  renderHeaderStats();
+  const activeView = document.querySelector('.view.active').id;
+  if (activeView === 'view-topics') renderTopics();
+  else if (activeView === 'view-words') renderWordsTable();
+  else if (activeView === 'view-study' && !state.session) renderStudyView();
+  refreshQuickTopicSelect();
+}
 
 // ============================================
 // HEADER STATS
@@ -1787,9 +1999,9 @@ function renderHeaderStats() {
   const mastered = state.words.filter(w => getWordStatus(w) === 'mastered').length;
 
   document.getElementById('headerStats').innerHTML = `
-    <div class="stat-pill mustard"><strong>${total}</strong> слов</div>
-    <div class="stat-pill olive"><strong>${mastered}</strong> ✓ выучено</div>
-    <div class="stat-pill terracotta"><strong>${struggling}</strong> ⚠ сложных</div>
+    <div class="stat-pill mustard"><strong>${total}</strong> words</div>
+    <div class="stat-pill olive"><strong>${mastered}</strong> ✓</div>
+    <div class="stat-pill terracotta"><strong>${struggling}</strong> ⚠</div>
   `;
 
   document.getElementById('cntWords').textContent = total;
@@ -1797,7 +2009,6 @@ function renderHeaderStats() {
   document.getElementById('cntStudy').textContent = getStudyPool().length;
 }
 
-// Returns the set of words that would be included in a session given current filters
 function getStudyPool() {
   let pool = state.selectedTopics.size > 0
     ? state.words.filter(w => state.selectedTopics.has(w.topicId))
@@ -1809,23 +2020,18 @@ function getStudyPool() {
 }
 
 // ============================================
-// STUDY SESSION
+// SESSION
 // ============================================
 function buildSessionDeck(wordPool) {
-  // Prioritize struggling words and new words
   const struggling = wordPool.filter(w => getWordStatus(w) === 'struggling');
   const newOnes = wordPool.filter(w => getWordStatus(w) === 'new');
   const learning = wordPool.filter(w => getWordStatus(w) === 'learning');
   const familiar = wordPool.filter(w => getWordStatus(w) === 'familiar');
   const mastered = wordPool.filter(w => getWordStatus(w) === 'mastered');
 
-  // Sort struggling by mistakes desc; mastered come at the end and only some
   struggling.sort((a, b) => b.mistakes - a.mistakes);
-  // Mix new, learning and familiar together
   const middle = [...newOnes, ...learning, ...familiar];
-  // Sort middle randomly within group
   middle.sort(() => Math.random() - 0.5);
-  // Take half of mastered for review
   const masteredReview = mastered.slice(0, Math.ceil(mastered.length / 2));
   masteredReview.sort(() => Math.random() - 0.5);
 
@@ -1834,18 +2040,14 @@ function buildSessionDeck(wordPool) {
 
 function startSession() {
   const pool = getStudyPool();
-
   if (pool.length === 0) {
-    toast('Нет слов для изучения с текущими фильтрами', 'error');
+    toast('No words to study with current filters', 'error');
     return;
   }
-
   const deck = buildSessionDeck(pool);
   state.session = {
-    deck,
-    index: 0,
-    correctIds: [],
-    wrongIds: [],
+    deck, index: 0,
+    correctIds: [], wrongIds: [],
     flipped: false
   };
   renderStudyView();
@@ -1856,7 +2058,6 @@ function answerCard(correct) {
   const card = document.querySelector('.flashcard');
   if (!card) return;
 
-  // animate
   card.classList.add(correct ? 'swipe-right' : 'swipe-left');
 
   const wordId = state.session.deck[state.session.index];
@@ -1871,7 +2072,6 @@ function answerCard(correct) {
       word.streakCorrect = 0;
       word.mistakes = (word.mistakes || 0) + 1;
       state.session.wrongIds.push(wordId);
-      // Schedule re-show: append to deck again at random later position
       const remaining = state.session.deck.length - state.session.index - 1;
       const insertOffset = Math.min(remaining + Math.floor(Math.random() * 4) + 3, state.session.deck.length);
       state.session.deck.splice(state.session.index + insertOffset, 0, wordId);
@@ -1890,28 +2090,28 @@ function answerCard(correct) {
 function renderStudyView() {
   const container = document.getElementById('studyContent');
 
-  // No words yet
   if (state.words.length === 0) {
     container.innerHTML = `
       <div class="empty-state">
         <h3>¡Hola! 👋</h3>
-        <p>Загрузи свои первые слова, чтобы начать</p>
-        <button class="btn primary" onclick="document.querySelector('[data-view=import]').click()">→ Загрузить слова</button>
+        <p>Add your first words to get started</p>
+        <button class="btn primary" id="goImport">→ Import words</button>
       </div>
     `;
+    document.getElementById('goImport').addEventListener('click', () => {
+      document.querySelector('[data-view=import]').click();
+    });
     return;
   }
 
-  // No active session
   if (!state.session) {
     const topicNames = state.selectedTopics.size > 0
       ? Array.from(state.selectedTopics).map(id => {
           const t = state.topics.find(x => x.id === id);
           return t ? `${t.emoji} ${t.name}` : '';
         }).filter(Boolean).join(' · ')
-      : 'все темы';
+      : 'all topics';
 
-    // Count words per status within selected topics
     const topicPool = state.selectedTopics.size > 0
       ? state.words.filter(w => state.selectedTopics.has(w.topicId))
       : state.words.slice();
@@ -1935,35 +2135,35 @@ function renderStudyView() {
     container.innerHTML = `
       <div class="session-config">
         <div class="config-row">
-          <span class="config-row-label">Темы:</span>
+          <span class="config-row-label">Topics:</span>
           <strong style="font-family:'Fraunces',serif; font-size: 16px;">${topicNames}</strong>
-          <button class="btn ghost small" id="goToTopics" style="margin-left: auto;">Выбрать темы →</button>
+          <button class="btn ghost small" id="goToTopics" style="margin-left: auto;">Pick topics →</button>
         </div>
         <div class="config-row">
-          <span class="config-row-label">Включить:</span>
-          ${chip('new', '⊙', 'новые')}
-          ${chip('learning', '↻', 'учатся')}
-          ${chip('familiar', '◐', 'знакомо')}
-          ${chip('struggling', '⚠', 'сложные')}
-          ${chip('mastered', '✓', 'выучено')}
+          <span class="config-row-label">Include:</span>
+          ${chip('new', '⊙', 'new')}
+          ${chip('learning', '↻', 'learning')}
+          ${chip('familiar', '◐', 'familiar')}
+          ${chip('struggling', '⚠', 'struggling')}
+          ${chip('mastered', '✓', 'mastered')}
         </div>
         <div class="config-row">
-          <span class="config-row-label">Направление:</span>
+          <span class="config-row-label">Direction:</span>
           <div class="toggle-group">
-            <button class="toggle-btn ${state.direction === 'ru-es' ? 'active' : ''}" data-dir="ru-es">RU → ES</button>
-            <button class="toggle-btn ${state.direction === 'es-ru' ? 'active' : ''}" data-dir="es-ru">ES → RU</button>
+            <button class="toggle-btn ${state.direction === 'l1-l2' ? 'active' : ''}" data-dir="l1-l2">${escapeHtml(state.langLabels.l1)} → ${escapeHtml(state.langLabels.l2)}</button>
+            <button class="toggle-btn ${state.direction === 'l2-l1' ? 'active' : ''}" data-dir="l2-l1">${escapeHtml(state.langLabels.l2)} → ${escapeHtml(state.langLabels.l1)}</button>
           </div>
           <span style="margin-left: auto; font-family: 'DM Mono', monospace; font-size: 13px;">
-            <strong style="font-family:'Fraunces',serif; font-size: 22px; color: var(--terracotta);">${poolSize}</strong> слов в сессии
+            <strong style="font-family:'Fraunces',serif; font-size: 22px; color: var(--terracotta);">${poolSize}</strong> in deck
           </span>
         </div>
       </div>
       <div class="card-stage">
         <div class="empty-state" style="border: 3px solid var(--ink); background: var(--cream);">
-          <h3>Готова начать? 🚀</h3>
-          <p>Нажми на карточку, чтобы перевернуть.<br>Или сразу ответь зелёной/красной галочкой — если уверена.</p>
+          <h3>Ready? 🚀</h3>
+          <p>Tap the card to flip it.<br>Or answer directly with ✓ / ✗ if you're sure.</p>
           <button class="btn primary" id="startBtn" style="font-size: 16px; padding: 16px 32px;" ${poolSize === 0 ? 'disabled' : ''}>
-            ${poolSize === 0 ? 'Нет слов с этими фильтрами' : 'Начать сессию →'}
+            ${poolSize === 0 ? 'No words match these filters' : 'Start session →'}
           </button>
         </div>
       </div>
@@ -1981,11 +2181,8 @@ function renderStudyView() {
     document.querySelectorAll('.include-chip').forEach(c => {
       c.addEventListener('click', () => {
         const status = c.dataset.status;
-        if (state.excludeStatuses.has(status)) {
-          state.excludeStatuses.delete(status);
-        } else {
-          state.excludeStatuses.add(status);
-        }
+        if (state.excludeStatuses.has(status)) state.excludeStatuses.delete(status);
+        else state.excludeStatuses.add(status);
         renderStudyView();
         renderHeaderStats();
       });
@@ -1993,34 +2190,32 @@ function renderStudyView() {
     return;
   }
 
-  // Session in progress
   const s = state.session;
 
   if (s.index >= s.deck.length) {
-    // session end
     const totalAnswered = s.correctIds.length + s.wrongIds.length;
     const accuracy = totalAnswered > 0 ? Math.round(s.correctIds.length / totalAnswered * 100) : 0;
     container.innerHTML = `
       <div class="session-end">
         <h2>¡<em>Bravo</em>! 🎉</h2>
-        <p>Сессия завершена</p>
+        <p>Session complete</p>
         <div class="results">
           <div class="result-box good">
             <div class="num">${s.correctIds.length}</div>
-            <div class="label">правильно</div>
+            <div class="label">correct</div>
           </div>
           <div class="result-box bad">
             <div class="num">${s.wrongIds.length}</div>
-            <div class="label">ошибок</div>
+            <div class="label">mistakes</div>
           </div>
           <div class="result-box">
             <div class="num">${accuracy}%</div>
-            <div class="label">точность</div>
+            <div class="label">accuracy</div>
           </div>
         </div>
-        <div style="display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;">
-          <button class="btn primary" id="restartBtn">↻ Ещё одна сессия</button>
-          <button class="btn ghost" id="exitBtn">К темам</button>
+        <div style="display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;">
+          <button class="btn primary" id="restartBtn">↻ Another session</button>
+          <button class="btn ghost" id="exitBtn">Back to topics</button>
         </div>
       </div>
     `;
@@ -2045,31 +2240,32 @@ function renderStudyView() {
   const topic = state.topics.find(t => t.id === word.topicId);
   const topicLabel = topic ? `${topic.emoji} ${topic.name}` : '—';
 
-  const frontText = state.direction === 'ru-es' ? word.ru : word.es;
-  const backText = state.direction === 'ru-es' ? word.es : word.ru;
-  const frontLang = state.direction === 'ru-es' ? 'RU' : 'ES';
-  const backLang = state.direction === 'ru-es' ? 'ES' : 'RU';
+  const frontText = state.direction === 'l1-l2' ? word.l1 : word.l2;
+  const backText = state.direction === 'l1-l2' ? word.l2 : word.l1;
+  const frontLang = state.direction === 'l1-l2' ? state.langLabels.l1 : state.langLabels.l2;
+  const backLang = state.direction === 'l1-l2' ? state.langLabels.l2 : state.langLabels.l1;
+  const backIsL2 = state.direction === 'l1-l2';
 
   container.innerHTML = `
     <div class="study-controls">
-      <h2>Сессия в процессе</h2>
-      <div class="progress-info">Карточка ${s.index + 1} / ${s.deck.length} · ✓ ${s.correctIds.length} · ✗ ${s.wrongIds.length}</div>
+      <h2>Session</h2>
+      <div class="progress-info">${s.index + 1} / ${s.deck.length} · ✓ ${s.correctIds.length} · ✗ ${s.wrongIds.length}</div>
     </div>
     <div class="card-stage">
       <div class="flashcard" id="flashcard">
         <div class="flashcard-inner">
           <div class="face front">
-            <div class="face-tag">${topicLabel} · ${frontLang}</div>
+            <div class="face-tag">${escapeHtml(topicLabel)} · ${escapeHtml(frontLang)}</div>
             <div class="face-num">${s.index + 1}/${s.deck.length}</div>
-            <div class="word ${frontLang === 'ES' ? 'es' : ''}">${escapeHtml(frontText)}</div>
-            <div class="flip-hint">↺ нажми чтобы перевернуть · или ответь сразу ↓</div>
+            <div class="word ${!backIsL2 ? 'lang2' : ''}">${escapeHtml(frontText)}</div>
+            <div class="flip-hint">↺ tap to flip · or answer below ↓</div>
           </div>
           <div class="face back">
-            <div class="face-tag">${topicLabel} · ${backLang}</div>
+            <div class="face-tag">${escapeHtml(topicLabel)} · ${escapeHtml(backLang)}</div>
             <div class="face-num">${s.index + 1}/${s.deck.length}</div>
-            <div class="word ${backLang === 'ES' ? 'es' : ''}">${escapeHtml(backText)}</div>
-            <div class="word-meta">${frontText}</div>
-            <div class="flip-hint">оцени свой ответ ↓</div>
+            <div class="word ${backIsL2 ? 'lang2' : ''}">${escapeHtml(backText)}</div>
+            <div class="word-meta">${escapeHtml(frontText)}</div>
+            <div class="flip-hint">rate your answer ↓</div>
           </div>
         </div>
       </div>
@@ -2078,15 +2274,15 @@ function renderStudyView() {
       <div class="answer-row">
         <div style="text-align: center;">
           <button class="answer-btn wrong" id="btnWrong">✗</button>
-          <div class="answer-label">не знаю</div>
+          <div class="answer-label">don't know</div>
         </div>
         <div style="text-align: center;">
           <button class="answer-btn correct" id="btnRight">✓</button>
-          <div class="answer-label">знаю!</div>
+          <div class="answer-label">know it!</div>
         </div>
       </div>
-      <div style="text-align: center; margin-top: 24px;">
-        <button class="btn ghost small" id="endSession">Закончить сессию</button>
+      <div style="text-align: center; margin-top: 20px;">
+        <button class="btn ghost small" id="endSession">End session</button>
       </div>
     </div>
   `;
@@ -2110,13 +2306,12 @@ function renderStudyView() {
     answerCard(false);
   });
   document.getElementById('endSession').addEventListener('click', () => {
-    confirm_('Завершить сессию?', 'Прогресс ответов сохранится.', () => {
+    confirm_('End session?', 'Your progress will be saved.', () => {
       state.session.index = state.session.deck.length;
       renderStudyView();
     });
   });
 
-  // Keyboard shortcuts
   document.onkeydown = (e) => {
     if (!state.session || state.session.index >= state.session.deck.length) return;
     if (e.code === 'Space') {
@@ -2131,18 +2326,21 @@ function renderStudyView() {
 }
 
 // ============================================
-// TOPICS VIEW
+// TOPICS
 // ============================================
 function renderTopics() {
   const grid = document.getElementById('topicGrid');
   if (state.topics.length === 0) {
     grid.innerHTML = `
       <div class="empty-state" style="grid-column: 1/-1;">
-        <h3>Пока нет тем</h3>
-        <p>Загрузи слова, чтобы появились темы</p>
-        <button class="btn primary" onclick="document.querySelector('[data-view=import]').click()">→ Загрузить</button>
+        <h3>No topics yet</h3>
+        <p>Import some words to create topics</p>
+        <button class="btn primary" id="goImportEmpty">→ Import</button>
       </div>
     `;
+    document.getElementById('goImportEmpty').addEventListener('click', () => {
+      document.querySelector('[data-view=import]').click();
+    });
     return;
   }
   grid.innerHTML = state.topics.map(t => {
@@ -2151,30 +2349,27 @@ function renderTopics() {
     const familiar = words.filter(w => getWordStatus(w) === 'familiar').length;
     const struggling = words.filter(w => getWordStatus(w) === 'struggling').length;
     const newCount = words.filter(w => getWordStatus(w) === 'new').length;
-    // progress: mastered counts fully, familiar counts as half
     const progress = words.length > 0 ? ((mastered + familiar * 0.5) / words.length * 100) : 0;
     const selected = state.selectedTopics.has(t.id);
     return `
       <div class="topic-card ${selected ? 'selected' : ''}" data-topic="${t.id}">
         <div class="topic-card-head">
-          <div>
-            <div class="topic-emoji">${t.emoji}</div>
-          </div>
+          <div><div class="topic-emoji">${t.emoji}</div></div>
           <div class="topic-checkbox">✓</div>
         </div>
         <div class="topic-name">${escapeHtml(t.name)}</div>
-        <div class="topic-meta">${words.length} слов · ${mastered} выучено</div>
+        <div class="topic-meta">${words.length} words · ${mastered} mastered</div>
         <div class="topic-progress">
           <div class="topic-progress-fill" style="width: ${progress}%; background: ${t.color};"></div>
         </div>
         <div class="topic-stats">
-          ${newCount > 0 ? `<span class="topic-stat">${newCount} ⊙ новых</span>` : ''}
-          ${familiar > 0 ? `<span class="topic-stat">${familiar} ◐ знакомо</span>` : ''}
-          ${struggling > 0 ? `<span class="topic-stat struggling">${struggling} ⚠ сложных</span>` : ''}
-          ${mastered > 0 ? `<span class="topic-stat">${mastered} ✓ выучено</span>` : ''}
+          ${newCount > 0 ? `<span class="topic-stat">${newCount} ⊙ new</span>` : ''}
+          ${familiar > 0 ? `<span class="topic-stat">${familiar} ◐ familiar</span>` : ''}
+          ${struggling > 0 ? `<span class="topic-stat struggling">${struggling} ⚠ struggling</span>` : ''}
+          ${mastered > 0 ? `<span class="topic-stat">${mastered} ✓ mastered</span>` : ''}
         </div>
         <div class="topic-card-actions">
-          <button class="btn ghost small" data-action="study" data-topic="${t.id}">Учить →</button>
+          <button class="btn ghost small" data-action="study" data-topic="${t.id}">Study →</button>
           <button class="btn ghost small" data-action="rename" data-topic="${t.id}">✏</button>
           <button class="btn ghost small" data-action="delete" data-topic="${t.id}" style="margin-left:auto;">⌫</button>
         </div>
@@ -2182,22 +2377,17 @@ function renderTopics() {
     `;
   }).join('');
 
-  // Card click for selection
   grid.querySelectorAll('.topic-card').forEach(card => {
     card.addEventListener('click', (e) => {
       if (e.target.closest('[data-action]')) return;
       const id = card.dataset.topic;
-      if (state.selectedTopics.has(id)) {
-        state.selectedTopics.delete(id);
-      } else {
-        state.selectedTopics.add(id);
-      }
+      if (state.selectedTopics.has(id)) state.selectedTopics.delete(id);
+      else state.selectedTopics.add(id);
       renderTopics();
       renderHeaderStats();
     });
   });
 
-  // Action buttons
   grid.querySelectorAll('[data-action]').forEach(btn => {
     btn.addEventListener('click', (e) => {
       e.stopPropagation();
@@ -2210,7 +2400,7 @@ function renderTopics() {
         startSession();
         document.querySelector('[data-view=study]').click();
       } else if (action === 'rename') {
-        const newName = prompt('Новое название темы:', topic.name);
+        const newName = prompt('New topic name:', topic.name);
         if (newName && newName.trim()) {
           topic.name = newName.trim();
           save();
@@ -2218,7 +2408,7 @@ function renderTopics() {
         }
       } else if (action === 'delete') {
         const count = state.words.filter(w => w.topicId === id).length;
-        confirm_(`Удалить тему "${topic.name}"?`, `Будет удалено ${count} слов.`, () => {
+        confirm_(`Delete topic "${topic.name}"?`, `${count} words will be deleted.`, () => {
           state.words = state.words.filter(w => w.topicId !== id);
           state.topics = state.topics.filter(t => t.id !== id);
           state.selectedTopics.delete(id);
@@ -2243,7 +2433,7 @@ document.getElementById('clearAllTopics').addEventListener('click', () => {
 });
 document.getElementById('startSelectedSession').addEventListener('click', () => {
   if (state.selectedTopics.size === 0) {
-    toast('Выбери хотя бы одну тему (или ни одной, чтобы учить всё)', 'error');
+    toast('Select at least one topic (or none to study all)', 'error');
     return;
   }
   startSession();
@@ -2253,7 +2443,19 @@ document.getElementById('startSelectedSession').addEventListener('click', () => 
 // ============================================
 // WORDS TABLE
 // ============================================
+function applyColumnVisibility() {
+  document.getElementById('lang1Header').textContent = state.langLabels.l1;
+  document.getElementById('lang2Header').textContent = state.langLabels.l2;
+  const eye1 = document.getElementById('eyeLang1');
+  const eye2 = document.getElementById('eyeLang2');
+  eye1.textContent = state.colVisibility.l1 ? '👁' : '🙈';
+  eye2.textContent = state.colVisibility.l2 ? '👁' : '🙈';
+  eye1.classList.toggle('hidden', !state.colVisibility.l1);
+  eye2.classList.toggle('hidden', !state.colVisibility.l2);
+}
+
 function renderWordsTable() {
+  applyColumnVisibility();
   const body = document.getElementById('wordsBody');
   const search = state.search.toLowerCase();
   let rows = state.words.slice();
@@ -2262,11 +2464,10 @@ function renderWordsTable() {
   }
   if (search) {
     rows = rows.filter(w =>
-      w.ru.toLowerCase().includes(search) ||
-      w.es.toLowerCase().includes(search)
+      (w.l1 || '').toLowerCase().includes(search) ||
+      (w.l2 || '').toLowerCase().includes(search)
     );
   }
-  // sort: struggling first, then by mistakes
   rows.sort((a, b) => {
     const sa = getWordStatus(a);
     const sb = getWordStatus(b);
@@ -2275,10 +2476,10 @@ function renderWordsTable() {
     return b.mistakes - a.mistakes;
   });
 
-  document.getElementById('rowCount').textContent = `${rows.length} из ${state.words.length}`;
+  document.getElementById('rowCount').textContent = `${rows.length} of ${state.words.length}`;
 
   if (rows.length === 0) {
-    body.innerHTML = `<tr><td colspan="8" style="text-align:center; padding: 40px; opacity: 0.5; font-family: 'DM Mono', monospace;">— нет слов по выбранным условиям —</td></tr>`;
+    body.innerHTML = `<tr><td colspan="8" style="text-align:center; padding: 40px; opacity: 0.5; font-family: 'DM Mono', monospace;">— no words match —</td></tr>`;
     return;
   }
 
@@ -2287,20 +2488,26 @@ function renderWordsTable() {
     const badge = getStatusBadge(status);
     const topic = state.topics.find(t => t.id === w.topicId);
     const isStruggling = status === 'struggling';
+    const l1Cell = state.colVisibility.l1
+      ? escapeHtml(w.l1 || '')
+      : `<span class="cell-hidden"></span>`;
+    const l2Cell = state.colVisibility.l2
+      ? escapeHtml(w.l2 || '')
+      : `<span class="cell-hidden"></span>`;
     return `
       <tr class="${isStruggling ? 'struggling' : ''}" data-id="${w.id}">
         <td style="font-family: 'DM Mono', monospace; opacity: 0.4;">${i + 1}</td>
-        <td class="word-cell">${escapeHtml(w.ru)}</td>
-        <td class="word-cell es">${escapeHtml(w.es)}</td>
+        <td class="word-cell">${l1Cell}</td>
+        <td class="word-cell lang2">${l2Cell}</td>
         <td>${topic ? `<span style="font-family: 'DM Mono', monospace; font-size: 12px;">${topic.emoji} ${escapeHtml(topic.name)}</span>` : '—'}</td>
         <td><span class="badge ${badge.cls}">${badge.text}</span></td>
         <td style="text-align:center; font-family: 'DM Mono', monospace;">${w.mistakes}</td>
         <td style="text-align:center; font-family: 'DM Mono', monospace;">${w.streakCorrect}</td>
         <td>
           <div class="row-actions">
-            <button class="icon-btn" data-act="edit" title="Редактировать">✏</button>
-            <button class="icon-btn" data-act="reset" title="Сбросить прогресс">↺</button>
-            <button class="icon-btn danger" data-act="delete" title="Удалить">⌫</button>
+            <button class="icon-btn" data-act="edit" title="Edit">✏</button>
+            <button class="icon-btn" data-act="reset" title="Reset progress">↺</button>
+            <button class="icon-btn danger" data-act="delete" title="Delete">⌫</button>
           </div>
         </td>
       </tr>
@@ -2308,19 +2515,19 @@ function renderWordsTable() {
   }).join('');
 
   body.querySelectorAll('[data-act]').forEach(btn => {
-    btn.addEventListener('click', (e) => {
+    btn.addEventListener('click', () => {
       const tr = btn.closest('tr');
       const id = tr.dataset.id;
       const word = state.words.find(w => w.id === id);
       if (!word) return;
       const act = btn.dataset.act;
       if (act === 'edit') {
-        const newRu = prompt('Русский:', word.ru);
-        if (newRu === null) return;
-        const newEs = prompt('Español:', word.es);
-        if (newEs === null) return;
-        word.ru = newRu.trim();
-        word.es = newEs.trim();
+        const newL1 = prompt(state.langLabels.l1 + ':', word.l1);
+        if (newL1 === null) return;
+        const newL2 = prompt(state.langLabels.l2 + ':', word.l2);
+        if (newL2 === null) return;
+        word.l1 = newL1.trim();
+        word.l2 = newL2.trim();
         save();
         renderWordsTable();
       } else if (act === 'reset') {
@@ -2331,15 +2538,30 @@ function renderWordsTable() {
         save();
         renderWordsTable();
         renderHeaderStats();
-        toast('Прогресс сброшен');
+        toast('Progress reset');
       } else if (act === 'delete') {
-        confirm_('Удалить слово?', `"${word.ru}" — "${word.es}"`, () => {
+        confirm_('Delete this word?', `"${word.l1}" — "${word.l2}"`, () => {
           state.words = state.words.filter(w => w.id !== id);
           save();
           renderWordsTable();
           renderHeaderStats();
         });
       }
+    });
+  });
+
+  // Click on hidden cell to peek (one-shot reveal)
+  body.querySelectorAll('.cell-hidden').forEach(cell => {
+    cell.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const tr = cell.closest('tr');
+      const td = cell.closest('td');
+      const id = tr.dataset.id;
+      const word = state.words.find(w => w.id === id);
+      if (!word) return;
+      const isL2 = td.classList.contains('lang2');
+      const text = isL2 ? word.l2 : word.l1;
+      td.innerHTML = escapeHtml(text);
     });
   });
 }
@@ -2356,45 +2578,52 @@ document.querySelectorAll('.filter-chip').forEach(chip => {
     renderWordsTable();
   });
 });
+document.getElementById('eyeLang1').addEventListener('click', () => {
+  state.colVisibility.l1 = !state.colVisibility.l1;
+  localStorage.setItem(COL_VIS_KEY, JSON.stringify(state.colVisibility));
+  renderWordsTable();
+});
+document.getElementById('eyeLang2').addEventListener('click', () => {
+  state.colVisibility.l2 = !state.colVisibility.l2;
+  localStorage.setItem(COL_VIS_KEY, JSON.stringify(state.colVisibility));
+  renderWordsTable();
+});
 
 // ============================================
 // IMPORT
 // ============================================
 function parseDelimited(text) {
-  // Try to detect delimiter: tab, semicolon, comma
   const lines = text.split(/\r?\n/).map(l => l.trim()).filter(l => l.length > 0);
   if (lines.length === 0) return [];
 
-  // detect delimiter from first line
   const firstLine = lines[0];
   let delimiter = '\t';
   if (firstLine.includes('\t')) delimiter = '\t';
   else if (firstLine.includes(';')) delimiter = ';';
   else if (firstLine.includes(',')) delimiter = ',';
 
-  // Check if first line is header
   const firstParts = lines[0].split(delimiter).map(p => p.trim().toLowerCase());
-  const hasHeader = firstParts.some(p => ['русский', 'испанский', 'español', 'spanish', 'russian', 'тема', 'topic', 'ru', 'es'].includes(p));
+  const hasHeader = firstParts.some(p => ['lang1', 'lang2', 'language 1', 'language 2', 'l1', 'l2', 'русский', 'испанский', 'topic', 'тема', 'ru', 'es'].includes(p));
 
   let dataLines = lines;
-  let columnMap = { ru: 0, es: 1, topic: 2 };
+  let columnMap = { l1: 0, l2: 1, topic: 2 };
   if (hasHeader) {
     dataLines = lines.slice(1);
     firstParts.forEach((p, i) => {
-      if (['русский', 'russian', 'ru', 'rus'].includes(p)) columnMap.ru = i;
-      if (['испанский', 'español', 'spanish', 'es', 'esp'].includes(p)) columnMap.es = i;
-      if (['тема', 'topic', 'category'].includes(p)) columnMap.topic = i;
+      if (['lang1', 'l1', 'language 1', 'русский', 'ru'].includes(p)) columnMap.l1 = i;
+      if (['lang2', 'l2', 'language 2', 'испанский', 'es', 'spanish'].includes(p)) columnMap.l2 = i;
+      if (['topic', 'тема', 'category'].includes(p)) columnMap.topic = i;
     });
   }
 
   return dataLines.map(line => {
     const parts = parseCsvLine(line, delimiter);
     return {
-      ru: parts[columnMap.ru] || '',
-      es: parts[columnMap.es] || '',
+      l1: parts[columnMap.l1] || '',
+      l2: parts[columnMap.l2] || '',
       topic: parts[columnMap.topic] || ''
     };
-  }).filter(r => r.ru && r.es);
+  }).filter(r => r.l1 && r.l2);
 }
 
 function parseCsvLine(line, delimiter) {
@@ -2403,21 +2632,14 @@ function parseCsvLine(line, delimiter) {
   let inQuotes = false;
   for (let i = 0; i < line.length; i++) {
     const ch = line[i];
-    if (ch === '"' && !inQuotes) {
-      inQuotes = true;
-    } else if (ch === '"' && inQuotes) {
-      if (line[i + 1] === '"') {
-        current += '"';
-        i++;
-      } else {
-        inQuotes = false;
-      }
+    if (ch === '"' && !inQuotes) inQuotes = true;
+    else if (ch === '"' && inQuotes) {
+      if (line[i + 1] === '"') { current += '"'; i++; }
+      else inQuotes = false;
     } else if (ch === delimiter && !inQuotes) {
       result.push(current.trim());
       current = '';
-    } else {
-      current += ch;
-    }
+    } else current += ch;
   }
   result.push(current.trim());
   return result;
@@ -2426,11 +2648,14 @@ function parseCsvLine(line, delimiter) {
 function importData(rows, defaultTopic, defaultEmoji) {
   let added = 0;
   rows.forEach(r => {
-    const topicName = r.topic || defaultTopic || 'Без темы';
+    const topicName = r.topic || defaultTopic || 'Uncategorized';
     const topic = ensureTopic(topicName, defaultEmoji);
-    const dupe = state.words.find(w => w.ru.toLowerCase() === r.ru.toLowerCase() && w.es.toLowerCase() === r.es.toLowerCase());
+    const dupe = state.words.find(w =>
+      (w.l1 || '').toLowerCase() === r.l1.toLowerCase() &&
+      (w.l2 || '').toLowerCase() === r.l2.toLowerCase()
+    );
     if (!dupe) {
-      addWord(r.ru, r.es, topic.id);
+      addWord(r.l1, r.l2, topic.id);
       added++;
     }
   });
@@ -2439,7 +2664,6 @@ function importData(rows, defaultTopic, defaultEmoji) {
   return added;
 }
 
-// File drop
 const fileDrop = document.getElementById('fileDrop');
 const fileInput = document.getElementById('fileInput');
 fileDrop.addEventListener('click', () => fileInput.click());
@@ -2463,76 +2687,83 @@ function handleFile(file) {
     const text = e.target.result;
     const rows = parseDelimited(text);
     if (rows.length === 0) {
-      toast('Не удалось распознать файл', 'error');
+      toast('Could not parse the file', 'error');
       return;
     }
     const added = importData(rows);
-    toast(`Добавлено ${added} слов из файла`, 'success');
+    toast(`Added ${added} words from file`, 'success');
     refreshQuickTopicSelect();
   };
   reader.readAsText(file, 'UTF-8');
 }
 
-// Paste import
 document.getElementById('importPasted').addEventListener('click', () => {
   const text = document.getElementById('pasteArea').value;
   const topic = document.getElementById('pasteTopic').value.trim();
   const emoji = document.getElementById('pasteEmoji').value.trim();
   if (!text.trim()) {
-    toast('Вставь данные сначала', 'error');
+    toast('Paste data first', 'error');
     return;
   }
   const rows = parseDelimited(text);
   if (rows.length === 0) {
-    toast('Не удалось распознать данные', 'error');
+    toast('Could not parse data', 'error');
     return;
   }
   const added = importData(rows, topic, emoji);
-  toast(`Добавлено ${added} слов`, 'success');
+  toast(`Added ${added} words`, 'success');
   document.getElementById('pasteArea').value = '';
   document.getElementById('pasteTopic').value = '';
   document.getElementById('pasteEmoji').value = '';
   refreshQuickTopicSelect();
 });
 
-// Quick add
 function refreshQuickTopicSelect() {
   const sel = document.getElementById('quickTopic');
-  sel.innerHTML = `<option value="">+ Новая тема...</option>` +
+  sel.innerHTML = `<option value="">+ New topic...</option>` +
     state.topics.map(t => `<option value="${t.id}">${t.emoji} ${escapeHtml(t.name)}</option>`).join('');
 }
+
 document.getElementById('quickAdd').addEventListener('click', () => {
-  const ru = document.getElementById('quickRu').value.trim();
-  const es = document.getElementById('quickEs').value.trim();
+  const l1 = document.getElementById('quickLang1').value.trim();
+  const l2 = document.getElementById('quickLang2').value.trim();
   let topicId = document.getElementById('quickTopic').value;
-  if (!ru || !es) {
-    toast('Заполни оба поля', 'error');
+  if (!l1 || !l2) {
+    toast('Fill in both fields', 'error');
     return;
   }
   if (!topicId) {
-    const name = prompt('Название новой темы:');
+    const name = prompt('New topic name:');
     if (!name) return;
     const t = ensureTopic(name);
     topicId = t.id;
   }
-  addWord(ru, es, topicId);
+  addWord(l1, l2, topicId);
   save();
-  document.getElementById('quickRu').value = '';
-  document.getElementById('quickEs').value = '';
+  document.getElementById('quickLang1').value = '';
+  document.getElementById('quickLang2').value = '';
   refreshQuickTopicSelect();
   renderHeaderStats();
-  toast('Слово добавлено', 'success');
+  toast('Word added', 'success');
 });
 
-// Export
+document.getElementById('saveLangs').addEventListener('click', () => {
+  const l1 = document.getElementById('lang1Input').value.trim() || 'Language 1';
+  const l2 = document.getElementById('lang2Input').value.trim() || 'Language 2';
+  state.langLabels = { l1, l2 };
+  localStorage.setItem(LANG_LABELS_KEY, JSON.stringify(state.langLabels));
+  applyColumnVisibility();
+  toast('Language labels saved', 'success');
+});
+
 document.getElementById('exportData').addEventListener('click', () => {
-  const lines = ['русский,испанский,тема,ошибок,подряд_правильно,статус'];
+  const lines = [`${state.langLabels.l1},${state.langLabels.l2},topic,mistakes,streak,status`];
   state.words.forEach(w => {
     const topic = state.topics.find(t => t.id === w.topicId);
     const status = getStatusBadge(getWordStatus(w)).text;
     lines.push([
-      csvEscape(w.ru),
-      csvEscape(w.es),
+      csvEscape(w.l1),
+      csvEscape(w.l2),
       csvEscape(topic ? topic.name : ''),
       w.mistakes,
       w.streakCorrect,
@@ -2543,10 +2774,10 @@ document.getElementById('exportData').addEventListener('click', () => {
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url;
-  a.download = `vamos-spanish-${new Date().toISOString().slice(0, 10)}.csv`;
+  a.download = `vamos-${new Date().toISOString().slice(0, 10)}.csv`;
   a.click();
   URL.revokeObjectURL(url);
-  toast('Экспорт готов', 'success');
+  toast('Export ready', 'success');
 });
 
 function csvEscape(s) {
@@ -2557,39 +2788,34 @@ function csvEscape(s) {
   return s;
 }
 
-// Demo data
 document.getElementById('loadDemo').addEventListener('click', () => {
-  confirm_('Загрузить демо-набор?', 'Будет добавлено около 30 слов в нескольких темах.', () => {
+  confirm_('Load demo set?', '~30 words across a few topics will be added.', () => {
     const demos = [
-      // Базовое
-      ['🌸', 'Базовое', [
-        ['привет', 'hola'], ['пока', 'adiós'], ['спасибо', 'gracias'],
-        ['пожалуйста', 'por favor'], ['да', 'sí'], ['нет', 'no'],
-        ['извини', 'perdón'], ['доброе утро', 'buenos días']
+      ['🌸', 'Basics', [
+        ['hello', 'hola'], ['bye', 'adiós'], ['thanks', 'gracias'],
+        ['please', 'por favor'], ['yes', 'sí'], ['no', 'no'],
+        ['sorry', 'perdón'], ['good morning', 'buenos días']
       ]],
-      // Еда
-      ['🍅', 'Еда', [
-        ['хлеб', 'pan'], ['вода', 'agua'], ['кофе', 'café'],
-        ['молоко', 'leche'], ['яблоко', 'manzana'], ['сыр', 'queso'],
-        ['рис', 'arroz'], ['рыба', 'pescado']
+      ['🍅', 'Food', [
+        ['bread', 'pan'], ['water', 'agua'], ['coffee', 'café'],
+        ['milk', 'leche'], ['apple', 'manzana'], ['cheese', 'queso'],
+        ['rice', 'arroz'], ['fish', 'pescado']
       ]],
-      // Глаголы
-      ['⚡', 'Глаголы', [
-        ['быть', 'ser'], ['иметь', 'tener'], ['идти', 'ir'],
-        ['говорить', 'hablar'], ['знать', 'saber'], ['делать', 'hacer'],
-        ['видеть', 'ver'], ['жить', 'vivir']
+      ['⚡', 'Verbs', [
+        ['to be', 'ser'], ['to have', 'tener'], ['to go', 'ir'],
+        ['to speak', 'hablar'], ['to know', 'saber'], ['to do', 'hacer'],
+        ['to see', 'ver'], ['to live', 'vivir']
       ]],
-      // Дом
-      ['🏠', 'Дом', [
-        ['дом', 'casa'], ['комната', 'habitación'], ['кухня', 'cocina'],
-        ['стол', 'mesa'], ['окно', 'ventana'], ['дверь', 'puerta']
+      ['🏠', 'Home', [
+        ['house', 'casa'], ['room', 'habitación'], ['kitchen', 'cocina'],
+        ['table', 'mesa'], ['window', 'ventana'], ['door', 'puerta']
       ]]
     ];
     demos.forEach(([emoji, name, words]) => {
       const topic = ensureTopic(name, emoji);
-      words.forEach(([ru, es]) => {
-        if (!state.words.find(w => w.ru === ru && w.es === es)) {
-          addWord(ru, es, topic.id);
+      words.forEach(([l1, l2]) => {
+        if (!state.words.find(w => w.l1 === l1 && w.l2 === l2)) {
+          addWord(l1, l2, topic.id);
         }
       });
     });
@@ -2597,13 +2823,12 @@ document.getElementById('loadDemo').addEventListener('click', () => {
     renderHeaderStats();
     renderTopics();
     refreshQuickTopicSelect();
-    toast('Демо-набор загружен!', 'success');
+    toast('Demo set loaded!', 'success');
   });
 });
 
-// Reset
 document.getElementById('resetData').addEventListener('click', () => {
-  confirm_('Сбросить всё?', 'Все слова, темы и прогресс будут удалены безвозвратно.', () => {
+  confirm_('Reset everything?', 'All words, topics and progress will be deleted.', () => {
     state.words = [];
     state.topics = [];
     state.selectedTopics.clear();
@@ -2612,12 +2837,12 @@ document.getElementById('resetData').addEventListener('click', () => {
     renderTopics();
     renderStudyView();
     refreshQuickTopicSelect();
-    toast('Данные сброшены');
+    toast('Data reset');
   });
 });
 
 // ============================================
-// MODAL & TOAST
+// CONFIRM MODAL & TOAST
 // ============================================
 let modalCallback = null;
 function confirm_(title, text, cb) {
@@ -2645,46 +2870,97 @@ function toast(msg, type = '') {
   toastTimer = setTimeout(() => t.classList.remove('show'), 2500);
 }
 
-function escapeHtml(s) {
-  return String(s).replace(/[&<>"']/g, m => ({
-    '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
-  }[m]));
-}
-
 // ============================================
-// ROOM UI WIRING
+// ROOM UI
 // ============================================
 function showRoomModal() {
+  // Refresh room history
+  renderRoomHistory();
   document.getElementById('roomModal').classList.add('active');
-  const input = document.getElementById('roomNameInput');
-  setTimeout(() => input.focus(), 100);
+  setTimeout(() => document.getElementById('createRoomInput').focus(), 100);
 }
 
 function hideRoomModal() {
   document.getElementById('roomModal').classList.remove('active');
 }
 
-document.getElementById('optCreate').addEventListener('click', async () => {
+function renderRoomHistory() {
+  const roomList = getRoomHistory().filter(r => r.name !== state.room);
+  const optHistory = document.getElementById('optHistory');
+  const list = document.getElementById('roomHistoryList');
+  if (roomList.length === 0) {
+    optHistory.style.display = 'none';
+    return;
+  }
+  optHistory.style.display = 'block';
+  list.innerHTML = roomList.map(r => {
+    const date = new Date(r.lastVisit);
+    const dateStr = date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+    return `
+      <div class="room-history-item" data-room="${escapeHtml(r.name)}">
+        <span class="room-history-name">${escapeHtml(r.name)}</span>
+        <span class="room-history-meta">${dateStr}</span>
+        <button class="remove-btn" data-remove="${escapeHtml(r.name)}" title="Remove">✕</button>
+      </div>
+    `;
+  }).join('');
+
+  list.querySelectorAll('.room-history-item').forEach(item => {
+    item.addEventListener('click', async (e) => {
+      if (e.target.closest('[data-remove]')) return;
+      const name = item.dataset.room;
+      hideRoomModal();
+      await joinRoom(name);
+      const url = new URL(window.location.href);
+      url.searchParams.set('room', state.room);
+      window.history.replaceState({}, '', url);
+    });
+  });
+  list.querySelectorAll('[data-remove]').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      removeRoomFromHistory(btn.dataset.remove);
+      renderRoomHistory();
+    });
+  });
+}
+
+document.getElementById('createRoomConfirm').addEventListener('click', async () => {
+  const name = document.getElementById('createRoomInput').value;
+  if (!name.trim()) {
+    toast('Enter a room name', 'error');
+    return;
+  }
   hideRoomModal();
-  const name = generateRoomName();
+  // Check if room already exists
+  try {
+    const normalized = normalizeRoomName(name);
+    const roomRef = doc(db, 'rooms', normalized);
+    const snap = await getDoc(roomRef);
+    if (snap.exists()) {
+      const yes = confirm(`Room "${normalized}" already exists. Join it instead?`);
+      if (!yes) {
+        showRoomModal();
+        return;
+      }
+    }
+  } catch (e) { console.error(e); }
   const ok = await joinRoom(name);
   if (ok) {
-    // Update URL with room param so refresh keeps it
     const url = new URL(window.location.href);
-    url.searchParams.set('room', name);
+    url.searchParams.set('room', state.room);
     history.replaceState({}, '', url);
   }
 });
 
-document.getElementById('optSolo').addEventListener('click', () => {
-  hideRoomModal();
-  toast('Локальный режим. Подключиться к комнате можно в любой момент.');
+document.getElementById('createRoomInput').addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') document.getElementById('createRoomConfirm').click();
 });
 
 document.getElementById('joinRoomConfirm').addEventListener('click', async () => {
-  const name = document.getElementById('roomNameInput').value;
+  const name = document.getElementById('joinRoomInput').value;
   if (!name.trim()) {
-    toast('Введи имя комнаты', 'error');
+    toast('Enter a room name', 'error');
     return;
   }
   hideRoomModal();
@@ -2696,10 +2972,13 @@ document.getElementById('joinRoomConfirm').addEventListener('click', async () =>
   }
 });
 
-document.getElementById('roomNameInput').addEventListener('keydown', (e) => {
-  if (e.key === 'Enter') {
-    document.getElementById('joinRoomConfirm').click();
-  }
+document.getElementById('joinRoomInput').addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') document.getElementById('joinRoomConfirm').click();
+});
+
+document.getElementById('optSolo').addEventListener('click', () => {
+  hideRoomModal();
+  toast('Local mode — connect a room anytime');
 });
 
 document.getElementById('joinRoomBtn').addEventListener('click', () => {
@@ -2707,7 +2986,7 @@ document.getElementById('joinRoomBtn').addEventListener('click', () => {
 });
 
 document.getElementById('leaveRoom').addEventListener('click', () => {
-  confirm_('Выйти из комнаты?', 'Локальная копия данных останется на этом устройстве.', () => {
+  confirm_('Leave room?', 'Local copy stays on this device.', () => {
     leaveRoom();
   });
 });
@@ -2716,16 +2995,15 @@ document.getElementById('copyShareLink').addEventListener('click', async () => {
   const link = buildShareLink();
   try {
     await navigator.clipboard.writeText(link);
-    toast('Ссылка скопирована! Отправь её собеседнику.', 'success');
+    toast('Link copied — share it with anyone', 'success');
   } catch (e) {
-    // Fallback
     const ta = document.createElement('textarea');
     ta.value = link;
     document.body.appendChild(ta);
     ta.select();
     document.execCommand('copy');
     document.body.removeChild(ta);
-    toast('Ссылка скопирована!', 'success');
+    toast('Link copied!', 'success');
   }
 });
 
@@ -2733,31 +3011,26 @@ document.getElementById('copyShareLink').addEventListener('click', async () => {
 // INIT
 // ============================================
 load();
+state.words = migrateWords(state.words);
+applyColumnVisibility();
 renderHeaderStats();
 renderStudyView();
 refreshQuickTopicSelect();
 renderSyncBar();
 
-// Check URL for room param, or last-used room from localStorage
+document.getElementById('lang1Input').value = state.langLabels.l1;
+document.getElementById('lang2Input').value = state.langLabels.l2;
+
 (async function autoConnect() {
   const params = new URLSearchParams(window.location.search);
   const urlRoom = params.get('room');
   const savedRoom = localStorage.getItem(ROOM_KEY);
 
   if (urlRoom) {
-    // Auto-join from URL — always pull remote (don't prompt merge)
     await joinRoom(urlRoom, { skipMergePrompt: true });
-    renderHeaderStats();
-    renderStudyView();
-    refreshQuickTopicSelect();
   } else if (savedRoom) {
-    // Reconnect to last room — skip prompt since this is the same session continuing
     await joinRoom(savedRoom, { skipMergePrompt: true });
-    renderHeaderStats();
-    renderStudyView();
-    refreshQuickTopicSelect();
   } else if (state.words.length === 0 && state.topics.length === 0) {
-    // First-time user with no data — show room modal
     showRoomModal();
   }
 })();
