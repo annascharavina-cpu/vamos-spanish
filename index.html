@@ -33,8 +33,10 @@
     color: var(--ink);
     font-family: 'Outfit', sans-serif;
     min-height: 100vh;
-    overflow-x: hidden;
     -webkit-font-smoothing: antialiased;
+  }
+  body {
+    overflow-x: clip;
   }
 
   body::before {
@@ -771,7 +773,6 @@
     background: var(--paper);
     border: 3px solid var(--ink);
     border-radius: 20px;
-    overflow: hidden;
     box-shadow: var(--shadow);
   }
   .table-head {
@@ -783,6 +784,7 @@
     align-items: center;
     flex-wrap: wrap;
     gap: 12px;
+    border-radius: 17px 17px 0 0;
   }
   .table-head h3 {
     font-family: 'Fraunces', serif;
@@ -826,9 +828,191 @@
   .filter-chip:hover { background: var(--mustard); }
   .filter-chip.active { background: var(--ink); color: var(--bg); }
 
+  /* Topic multi-select dropdown */
+  .topic-select {
+    position: relative;
+    display: inline-block;
+  }
+  .topic-select-btn {
+    padding: 6px 14px;
+    border: 2px solid var(--ink);
+    border-radius: 999px;
+    background: var(--paper);
+    cursor: pointer;
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    transition: all 0.15s;
+    min-height: 32px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .topic-select-btn:hover { background: var(--mustard); }
+  .topic-select-btn.has-selection {
+    background: var(--ink);
+    color: var(--bg);
+  }
+  .topic-select-btn .caret {
+    transition: transform 0.15s;
+    font-size: 10px;
+  }
+  .topic-select.open .topic-select-btn .caret {
+    transform: rotate(180deg);
+  }
+  .topic-select-panel {
+    position: absolute;
+    top: calc(100% + 6px);
+    left: 0;
+    z-index: 50;
+    background: var(--paper);
+    border: 2px solid var(--ink);
+    border-radius: 14px;
+    box-shadow: var(--shadow);
+    min-width: 280px;
+    max-width: 360px;
+    max-height: 360px;
+    display: none;
+    flex-direction: column;
+    overflow: hidden;
+  }
+  .topic-select.open .topic-select-panel {
+    display: flex;
+  }
+  .topic-select-search {
+    padding: 10px;
+    border-bottom: 2px solid var(--ink);
+    background: var(--cream);
+  }
+  .topic-select-search input {
+    width: 100%;
+    padding: 8px 12px;
+    border: 2px solid var(--ink);
+    border-radius: 999px;
+    font-family: 'DM Mono', monospace;
+    font-size: 13px;
+    background: var(--paper);
+    min-height: 36px;
+  }
+  .topic-select-list {
+    overflow-y: auto;
+    flex: 1;
+    max-height: 220px;
+  }
+  .topic-select-item {
+    padding: 10px 14px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    border-bottom: 1px solid rgba(26,24,22,0.08);
+    transition: background 0.1s;
+    font-family: 'Outfit', sans-serif;
+    font-size: 14px;
+  }
+  .topic-select-item:hover { background: var(--cream); }
+  .topic-select-item:last-child { border-bottom: none; }
+  .topic-select-item.checked { background: rgba(244, 185, 66, 0.25); }
+  .topic-select-item .check-box {
+    width: 18px;
+    height: 18px;
+    border: 2px solid var(--ink);
+    border-radius: 4px;
+    display: grid;
+    place-items: center;
+    background: var(--paper);
+    font-size: 12px;
+    font-weight: 900;
+    color: transparent;
+    flex-shrink: 0;
+  }
+  .topic-select-item.checked .check-box {
+    background: var(--ink);
+    color: var(--mustard);
+  }
+  .topic-select-item .ts-emoji {
+    font-size: 18px;
+  }
+  .topic-select-item .ts-name {
+    flex: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .topic-select-item .ts-count {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    opacity: 0.5;
+  }
+  .topic-select-footer {
+    padding: 8px 10px;
+    border-top: 2px solid var(--ink);
+    background: var(--cream);
+    display: flex;
+    gap: 6px;
+    justify-content: space-between;
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+  }
+  .topic-select-footer button {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 4px 8px;
+    border-radius: 999px;
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+  .topic-select-footer button:hover { background: var(--paper); }
+  .topic-select-empty {
+    padding: 20px;
+    text-align: center;
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    opacity: 0.5;
+  }
+
+  /* Status select dropdown (mini) */
+  .status-menu {
+    position: absolute;
+    z-index: 100;
+    background: var(--paper);
+    border: 2px solid var(--ink);
+    border-radius: 12px;
+    box-shadow: var(--shadow);
+    padding: 4px;
+    min-width: 160px;
+  }
+  .status-menu-item {
+    padding: 8px 12px;
+    cursor: pointer;
+    border-radius: 8px;
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .status-menu-item:hover { background: var(--cream); }
+  .status-menu-item.active {
+    background: var(--mustard);
+    font-weight: 700;
+  }
+
+  .badge.clickable {
+    cursor: pointer;
+    position: relative;
+  }
+  .badge.clickable:hover {
+    transform: translate(-1px, -1px);
+    box-shadow: 2px 2px 0 0 var(--ink);
+  }
+
   table {
     width: 100%;
     border-collapse: collapse;
+    table-layout: auto;
   }
   thead th {
     background: var(--cream);
@@ -840,6 +1024,10 @@
     letter-spacing: 0.1em;
     border-bottom: 2px solid var(--ink);
     white-space: nowrap;
+    position: sticky;
+    top: 0;
+    z-index: 5;
+    box-shadow: 0 2px 0 0 var(--ink);
   }
   .col-header {
     display: inline-flex;
@@ -868,6 +1056,9 @@
     font-size: 15px;
     vertical-align: middle;
   }
+  tbody tr:last-child td { border-bottom: none; }
+  tbody tr:last-child td:first-child { border-bottom-left-radius: 17px; }
+  tbody tr:last-child td:last-child { border-bottom-right-radius: 17px; }
   tbody tr:hover { background: var(--cream); }
   tbody tr.struggling { background: rgba(232, 93, 60, 0.08); }
   tbody tr.struggling:hover { background: rgba(232, 93, 60, 0.15); }
@@ -877,14 +1068,19 @@
     font-weight: 600;
     font-size: 16px;
     word-break: break-word;
+    cursor: pointer;
+    user-select: none;
+    transition: background 0.1s;
   }
+  .word-cell:hover { background: rgba(244, 185, 66, 0.15); }
   .word-cell.lang2 { font-style: italic; }
   .cell-hidden {
+    display: inline-block;
     color: transparent;
     background: var(--cream);
     border-radius: 6px;
+    padding: 2px 8px;
     user-select: none;
-    cursor: pointer;
     transition: color 0.15s;
   }
   .cell-hidden::before {
@@ -1257,6 +1453,28 @@
     .word-cell { font-size: 15px; }
     .badge { font-size: 10px; padding: 2px 8px; }
 
+    /* Mobile: show only #, L1, L2 — hide topic/status/mistakes/streak/actions */
+    #wordsTable thead th:nth-child(n+4),
+    #wordsTable tbody td:nth-child(n+4) {
+      display: none;
+    }
+    #wordsTable thead th:nth-child(1),
+    #wordsTable tbody td:nth-child(1) {
+      width: 28px;
+      padding-left: 12px;
+      padding-right: 6px;
+    }
+    #wordsTable thead th:nth-child(2),
+    #wordsTable thead th:nth-child(3) {
+      width: 50%;
+    }
+    #wordsTable tbody td:nth-child(2),
+    #wordsTable tbody td:nth-child(3) {
+      cursor: pointer;
+      user-select: none;
+    }
+    #wordsTable .word-cell { font-size: 16px; }
+
     .import-panel { padding: 20px; }
     .import-panel h3 { font-size: 19px; }
 
@@ -1270,6 +1488,11 @@
 
     .empty-state { padding: 40px 20px; }
     .empty-state h3 { font-size: 22px; }
+
+    .topic-select-panel {
+      min-width: 260px;
+      max-width: calc(100vw - 32px);
+    }
   }
 
   @media (max-width: 400px) {
@@ -1341,16 +1564,32 @@
         <input type="text" class="table-search" id="wordSearch" placeholder="search by word...">
       </div>
       <div class="filter-row">
-        <span class="setup-label">Filter:</span>
+        <span class="setup-label">Status:</span>
         <button class="filter-chip active" data-filter="all">All</button>
         <button class="filter-chip" data-filter="struggling">⚠ Struggling</button>
         <button class="filter-chip" data-filter="familiar">◐ Familiar</button>
         <button class="filter-chip" data-filter="mastered">✓ Mastered</button>
         <button class="filter-chip" data-filter="new">⊙ New</button>
+        <span style="margin-left: 12px;" class="setup-label">Topics:</span>
+        <div class="topic-select" id="wordsTopicSelect">
+          <button class="topic-select-btn" id="wordsTopicBtn">
+            <span id="wordsTopicBtnLabel">All topics</span>
+            <span class="caret">▼</span>
+          </button>
+          <div class="topic-select-panel" id="wordsTopicPanel">
+            <div class="topic-select-search">
+              <input type="text" id="wordsTopicSearch" placeholder="search topics..." autocomplete="off">
+            </div>
+            <div class="topic-select-list" id="wordsTopicList"></div>
+            <div class="topic-select-footer">
+              <button id="wordsTopicSelectAll">Select all</button>
+              <button id="wordsTopicClear">Clear</button>
+            </div>
+          </div>
+        </div>
         <span style="margin-left:auto" class="setup-label" id="rowCount"></span>
       </div>
-      <div style="overflow-x: auto;">
-        <table id="wordsTable">
+      <table id="wordsTable">
           <thead>
             <tr>
               <th style="width: 30px;">#</th>
@@ -1375,7 +1614,6 @@
           </thead>
           <tbody id="wordsBody"></tbody>
         </table>
-      </div>
     </div>
   </section>
 
@@ -1557,6 +1795,7 @@ let state = {
   words: [],
   topics: [],
   selectedTopics: new Set(),
+  wordsFilterTopics: new Set(), // topic filter for the All Words table
   excludeStatuses: new Set(),
   session: null,
   filter: 'all',
@@ -2022,6 +2261,105 @@ function getStudyPool() {
 // ============================================
 // SESSION
 // ============================================
+function renderStudyTopicPanel() {
+  const list = document.getElementById('studyTopicList');
+  if (!list) return;
+  const searchInput = document.getElementById('studyTopicSearch');
+  const q = (searchInput ? searchInput.value : '').toLowerCase().trim();
+
+  let topics = state.topics.slice();
+  if (q) topics = topics.filter(t => t.name.toLowerCase().includes(q));
+
+  if (topics.length === 0) {
+    list.innerHTML = `<div class="topic-select-empty">No topics found</div>`;
+    return;
+  }
+
+  list.innerHTML = topics.map(t => {
+    const checked = state.selectedTopics.has(t.id);
+    const count = state.words.filter(w => w.topicId === t.id).length;
+    return `
+      <div class="topic-select-item ${checked ? 'checked' : ''}" data-topic="${t.id}">
+        <div class="check-box">✓</div>
+        <span class="ts-emoji">${t.emoji}</span>
+        <span class="ts-name">${escapeHtml(t.name)}</span>
+        <span class="ts-count">${count}</span>
+      </div>
+    `;
+  }).join('');
+
+  list.querySelectorAll('.topic-select-item').forEach(item => {
+    item.addEventListener('click', () => {
+      const id = item.dataset.topic;
+      if (state.selectedTopics.has(id)) {
+        state.selectedTopics.delete(id);
+      } else {
+        state.selectedTopics.add(id);
+      }
+      renderStudyTopicPanel();
+      renderStudyTopicButton();
+      // Update the deck count badge
+      updateStudyPoolBadge();
+    });
+  });
+}
+
+function renderStudyTopicButton() {
+  const btn = document.getElementById('studyTopicBtn');
+  const label = document.getElementById('studyTopicBtnLabel');
+  if (!btn || !label) return;
+  const count = state.selectedTopics.size;
+  if (count === 0) {
+    label.textContent = 'All topics';
+    btn.classList.remove('has-selection');
+  } else if (count === 1) {
+    const id = Array.from(state.selectedTopics)[0];
+    const t = state.topics.find(x => x.id === id);
+    label.textContent = t ? `${t.emoji} ${t.name}` : '1 topic';
+    btn.classList.add('has-selection');
+  } else {
+    label.textContent = `${count} topics`;
+    btn.classList.add('has-selection');
+  }
+}
+
+// Lightweight update without full re-render of the whole screen,
+// to keep dropdown open while user toggles
+function updateStudyPoolBadge() {
+  // Find the pool size badge and update its number, plus the start button
+  const poolSize = getStudyPool().length;
+  const badge = document.querySelector('.session-config .config-row:last-child strong');
+  if (badge) badge.textContent = poolSize;
+  // Update status include chips counts
+  const topicPool = state.selectedTopics.size > 0
+    ? state.words.filter(w => state.selectedTopics.has(w.topicId))
+    : state.words.slice();
+  const counts = {
+    new: topicPool.filter(w => getWordStatus(w) === 'new').length,
+    learning: topicPool.filter(w => getWordStatus(w) === 'learning').length,
+    familiar: topicPool.filter(w => getWordStatus(w) === 'familiar').length,
+    mastered: topicPool.filter(w => getWordStatus(w) === 'mastered').length,
+    struggling: topicPool.filter(w => getWordStatus(w) === 'struggling').length
+  };
+  document.querySelectorAll('.include-chip').forEach(chip => {
+    const status = chip.dataset.status;
+    const cnt = chip.querySelector('.count');
+    if (cnt && counts[status] !== undefined) cnt.textContent = counts[status];
+  });
+  // Start button state
+  const startBtn = document.getElementById('startBtn');
+  if (startBtn) {
+    if (poolSize === 0) {
+      startBtn.disabled = true;
+      startBtn.textContent = 'No words match these filters';
+    } else {
+      startBtn.disabled = false;
+      startBtn.textContent = 'Start session →';
+    }
+  }
+  renderHeaderStats();
+}
+
 function buildSessionDeck(wordPool) {
   const struggling = wordPool.filter(w => getWordStatus(w) === 'struggling');
   const newOnes = wordPool.filter(w => getWordStatus(w) === 'new');
@@ -2105,13 +2443,6 @@ function renderStudyView() {
   }
 
   if (!state.session) {
-    const topicNames = state.selectedTopics.size > 0
-      ? Array.from(state.selectedTopics).map(id => {
-          const t = state.topics.find(x => x.id === id);
-          return t ? `${t.emoji} ${t.name}` : '';
-        }).filter(Boolean).join(' · ')
-      : 'all topics';
-
     const topicPool = state.selectedTopics.size > 0
       ? state.words.filter(w => state.selectedTopics.has(w.topicId))
       : state.words.slice();
@@ -2136,8 +2467,23 @@ function renderStudyView() {
       <div class="session-config">
         <div class="config-row">
           <span class="config-row-label">Topics:</span>
-          <strong style="font-family:'Fraunces',serif; font-size: 16px;">${topicNames}</strong>
-          <button class="btn ghost small" id="goToTopics" style="margin-left: auto;">Pick topics →</button>
+          <div class="topic-select" id="studyTopicSelect">
+            <button class="topic-select-btn" id="studyTopicBtn">
+              <span id="studyTopicBtnLabel">All topics</span>
+              <span class="caret">▼</span>
+            </button>
+            <div class="topic-select-panel" id="studyTopicPanel">
+              <div class="topic-select-search">
+                <input type="text" id="studyTopicSearch" placeholder="search topics..." autocomplete="off">
+              </div>
+              <div class="topic-select-list" id="studyTopicList"></div>
+              <div class="topic-select-footer">
+                <button id="studyTopicSelectAll">Select all</button>
+                <button id="studyTopicClear">Clear</button>
+              </div>
+            </div>
+          </div>
+          <button class="btn ghost small" id="goToTopics" style="margin-left: auto;">Topic grid →</button>
         </div>
         <div class="config-row">
           <span class="config-row-label">Include:</span>
@@ -2168,6 +2514,35 @@ function renderStudyView() {
         </div>
       </div>
     `;
+
+    // Topic dropdown wiring
+    const studyTopicSelect = document.getElementById('studyTopicSelect');
+    renderStudyTopicButton();
+    document.getElementById('studyTopicBtn').addEventListener('click', (e) => {
+      e.stopPropagation();
+      const isOpen = studyTopicSelect.classList.contains('open');
+      if (isOpen) {
+        studyTopicSelect.classList.remove('open');
+      } else {
+        studyTopicSelect.classList.add('open');
+        renderStudyTopicPanel();
+        setTimeout(() => document.getElementById('studyTopicSearch').focus(), 50);
+      }
+    });
+    document.getElementById('studyTopicSearch').addEventListener('input', renderStudyTopicPanel);
+    document.getElementById('studyTopicSelectAll').addEventListener('click', () => {
+      state.topics.forEach(t => state.selectedTopics.add(t.id));
+      renderStudyTopicPanel();
+      renderStudyTopicButton();
+      renderStudyView();
+    });
+    document.getElementById('studyTopicClear').addEventListener('click', () => {
+      state.selectedTopics.clear();
+      renderStudyTopicPanel();
+      renderStudyTopicButton();
+      renderStudyView();
+    });
+
     document.getElementById('startBtn').addEventListener('click', startSession);
     document.getElementById('goToTopics').addEventListener('click', () => {
       document.querySelector('[data-view=topics]').click();
@@ -2181,10 +2556,16 @@ function renderStudyView() {
     document.querySelectorAll('.include-chip').forEach(c => {
       c.addEventListener('click', () => {
         const status = c.dataset.status;
-        if (state.excludeStatuses.has(status)) state.excludeStatuses.delete(status);
-        else state.excludeStatuses.add(status);
-        renderStudyView();
-        renderHeaderStats();
+        if (state.excludeStatuses.has(status)) {
+          state.excludeStatuses.delete(status);
+        } else {
+          state.excludeStatuses.add(status);
+        }
+        // Toggle visual state inline
+        const included = !state.excludeStatuses.has(status);
+        c.classList.toggle('included', included);
+        c.classList.toggle('s-' + status, included);
+        updateStudyPoolBadge();
       });
     });
     return;
@@ -2412,6 +2793,7 @@ function renderTopics() {
           state.words = state.words.filter(w => w.topicId !== id);
           state.topics = state.topics.filter(t => t.id !== id);
           state.selectedTopics.delete(id);
+          state.wordsFilterTopics.delete(id);
           save();
           renderHeaderStats();
           renderTopics();
@@ -2454,14 +2836,83 @@ function applyColumnVisibility() {
   eye2.classList.toggle('hidden', !state.colVisibility.l2);
 }
 
+// Re-render the topic dropdown options (called when topics change or panel opens)
+function renderWordsTopicPanel() {
+  const list = document.getElementById('wordsTopicList');
+  const searchInput = document.getElementById('wordsTopicSearch');
+  const q = (searchInput.value || '').toLowerCase().trim();
+
+  let topics = state.topics.slice();
+  if (q) topics = topics.filter(t => t.name.toLowerCase().includes(q));
+
+  if (topics.length === 0) {
+    list.innerHTML = `<div class="topic-select-empty">No topics found</div>`;
+    return;
+  }
+
+  list.innerHTML = topics.map(t => {
+    const checked = state.wordsFilterTopics.has(t.id);
+    const count = state.words.filter(w => w.topicId === t.id).length;
+    return `
+      <div class="topic-select-item ${checked ? 'checked' : ''}" data-topic="${t.id}">
+        <div class="check-box">✓</div>
+        <span class="ts-emoji">${t.emoji}</span>
+        <span class="ts-name">${escapeHtml(t.name)}</span>
+        <span class="ts-count">${count}</span>
+      </div>
+    `;
+  }).join('');
+
+  list.querySelectorAll('.topic-select-item').forEach(item => {
+    item.addEventListener('click', () => {
+      const id = item.dataset.topic;
+      if (state.wordsFilterTopics.has(id)) {
+        state.wordsFilterTopics.delete(id);
+      } else {
+        state.wordsFilterTopics.add(id);
+      }
+      renderWordsTopicPanel();
+      renderWordsTopicButton();
+      renderWordsTable();
+    });
+  });
+}
+
+function renderWordsTopicButton() {
+  const btn = document.getElementById('wordsTopicBtn');
+  const label = document.getElementById('wordsTopicBtnLabel');
+  const count = state.wordsFilterTopics.size;
+  if (count === 0) {
+    label.textContent = 'All topics';
+    btn.classList.remove('has-selection');
+  } else if (count === 1) {
+    const id = Array.from(state.wordsFilterTopics)[0];
+    const t = state.topics.find(x => x.id === id);
+    label.textContent = t ? `${t.emoji} ${t.name}` : '1 topic';
+    btn.classList.add('has-selection');
+  } else {
+    label.textContent = `${count} topics`;
+    btn.classList.add('has-selection');
+  }
+}
+
 function renderWordsTable() {
   applyColumnVisibility();
+  renderWordsTopicButton();
+
   const body = document.getElementById('wordsBody');
   const search = state.search.toLowerCase();
   let rows = state.words.slice();
+
+  // Status filter
   if (state.filter !== 'all') {
     rows = rows.filter(w => getWordStatus(w) === state.filter);
   }
+  // Topic filter
+  if (state.wordsFilterTopics.size > 0) {
+    rows = rows.filter(w => state.wordsFilterTopics.has(w.topicId));
+  }
+  // Text search
   if (search) {
     rows = rows.filter(w =>
       (w.l1 || '').toLowerCase().includes(search) ||
@@ -2500,7 +2951,7 @@ function renderWordsTable() {
         <td class="word-cell">${l1Cell}</td>
         <td class="word-cell lang2">${l2Cell}</td>
         <td>${topic ? `<span style="font-family: 'DM Mono', monospace; font-size: 12px;">${topic.emoji} ${escapeHtml(topic.name)}</span>` : '—'}</td>
-        <td><span class="badge ${badge.cls}">${badge.text}</span></td>
+        <td><span class="badge clickable ${badge.cls}" data-status-btn title="Click to change status">${badge.text}</span></td>
         <td style="text-align:center; font-family: 'DM Mono', monospace;">${w.mistakes}</td>
         <td style="text-align:center; font-family: 'DM Mono', monospace;">${w.streakCorrect}</td>
         <td>
@@ -2550,20 +3001,137 @@ function renderWordsTable() {
     });
   });
 
-  // Click on hidden cell to peek (one-shot reveal)
-  body.querySelectorAll('.cell-hidden').forEach(cell => {
-    cell.addEventListener('click', (e) => {
+  // Click on status badge to change manually
+  body.querySelectorAll('[data-status-btn]').forEach(badge => {
+    badge.addEventListener('click', (e) => {
       e.stopPropagation();
-      const tr = cell.closest('tr');
-      const td = cell.closest('td');
+      const tr = badge.closest('tr');
+      const id = tr.dataset.id;
+      const word = state.words.find(w => w.id === id);
+      if (!word) return;
+      openStatusMenu(badge, word);
+    });
+  });
+
+  // Click on L1/L2 cell toggles its individual visibility
+  body.querySelectorAll('td.word-cell').forEach(td => {
+    td.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const tr = td.closest('tr');
       const id = tr.dataset.id;
       const word = state.words.find(w => w.id === id);
       if (!word) return;
       const isL2 = td.classList.contains('lang2');
+      const hasHidden = td.querySelector('.cell-hidden');
       const text = isL2 ? word.l2 : word.l1;
-      td.innerHTML = escapeHtml(text);
+      if (hasHidden) {
+        // Reveal
+        td.innerHTML = escapeHtml(text);
+      } else {
+        // Hide
+        td.innerHTML = `<span class="cell-hidden"></span>`;
+      }
     });
   });
+}
+
+// Manually change word status by setting mistakes/streak to canonical values
+function setWordStatus(word, newStatus) {
+  switch (newStatus) {
+    case 'new':
+      word.mistakes = 0;
+      word.streakCorrect = 0;
+      word.lastSeen = null;
+      word.timesShown = 0;
+      break;
+    case 'learning':
+      word.mistakes = 0;
+      word.streakCorrect = 0;
+      word.lastSeen = Date.now();
+      break;
+    case 'familiar':
+      // 1 correct in a row, not enough for mastered
+      word.mistakes = 0;
+      word.streakCorrect = 1;
+      word.lastSeen = Date.now();
+      break;
+    case 'mastered':
+      word.streakCorrect = 3;
+      word.mistakes = 0;
+      word.lastSeen = Date.now();
+      break;
+    case 'struggling':
+      word.mistakes = 2;
+      word.streakCorrect = 0;
+      word.lastSeen = Date.now();
+      break;
+  }
+}
+
+let openStatusMenuEl = null;
+function openStatusMenu(anchorEl, word) {
+  closeStatusMenu();
+  const current = getWordStatus(word);
+  const options = [
+    { key: 'new', label: '⊙ new' },
+    { key: 'learning', label: '↻ learning' },
+    { key: 'familiar', label: '◐ familiar' },
+    { key: 'mastered', label: '✓ mastered' },
+    { key: 'struggling', label: '⚠ struggling' }
+  ];
+  const menu = document.createElement('div');
+  menu.className = 'status-menu';
+  menu.innerHTML = options.map(o => `
+    <div class="status-menu-item ${o.key === current ? 'active' : ''}" data-status="${o.key}">${o.label}</div>
+  `).join('');
+  document.body.appendChild(menu);
+  // Position
+  const rect = anchorEl.getBoundingClientRect();
+  const menuRect = menu.getBoundingClientRect();
+  let left = rect.left + window.scrollX;
+  let top = rect.bottom + window.scrollY + 4;
+  // Flip up if would go offscreen
+  if (top + menuRect.height > window.scrollY + window.innerHeight - 10) {
+    top = rect.top + window.scrollY - menuRect.height - 4;
+  }
+  // Clamp horizontally
+  if (left + menuRect.width > window.scrollX + window.innerWidth - 10) {
+    left = window.scrollX + window.innerWidth - menuRect.width - 10;
+  }
+  menu.style.left = left + 'px';
+  menu.style.top = top + 'px';
+  openStatusMenuEl = menu;
+
+  menu.querySelectorAll('.status-menu-item').forEach(item => {
+    item.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const newStatus = item.dataset.status;
+      setWordStatus(word, newStatus);
+      save();
+      renderWordsTable();
+      renderHeaderStats();
+      closeStatusMenu();
+      toast(`Status changed to ${newStatus}`, 'success');
+    });
+  });
+
+  // Close on outside click
+  setTimeout(() => {
+    document.addEventListener('click', closeStatusMenuOnOutside, { once: true });
+  }, 0);
+}
+
+function closeStatusMenu() {
+  if (openStatusMenuEl) {
+    openStatusMenuEl.remove();
+    openStatusMenuEl = null;
+  }
+}
+
+function closeStatusMenuOnOutside(e) {
+  if (openStatusMenuEl && !openStatusMenuEl.contains(e.target)) {
+    closeStatusMenu();
+  }
 }
 
 document.getElementById('wordSearch').addEventListener('input', (e) => {
@@ -2587,6 +3155,44 @@ document.getElementById('eyeLang2').addEventListener('click', () => {
   state.colVisibility.l2 = !state.colVisibility.l2;
   localStorage.setItem(COL_VIS_KEY, JSON.stringify(state.colVisibility));
   renderWordsTable();
+});
+
+// Topic select dropdown
+const wordsTopicSelect = document.getElementById('wordsTopicSelect');
+document.getElementById('wordsTopicBtn').addEventListener('click', (e) => {
+  e.stopPropagation();
+  const isOpen = wordsTopicSelect.classList.contains('open');
+  if (isOpen) {
+    wordsTopicSelect.classList.remove('open');
+  } else {
+    wordsTopicSelect.classList.add('open');
+    renderWordsTopicPanel();
+    setTimeout(() => document.getElementById('wordsTopicSearch').focus(), 50);
+  }
+});
+document.getElementById('wordsTopicSearch').addEventListener('input', renderWordsTopicPanel);
+document.getElementById('wordsTopicSelectAll').addEventListener('click', () => {
+  state.topics.forEach(t => state.wordsFilterTopics.add(t.id));
+  renderWordsTopicPanel();
+  renderWordsTopicButton();
+  renderWordsTable();
+});
+document.getElementById('wordsTopicClear').addEventListener('click', () => {
+  state.wordsFilterTopics.clear();
+  renderWordsTopicPanel();
+  renderWordsTopicButton();
+  renderWordsTable();
+});
+// Close dropdown on outside click
+document.addEventListener('click', (e) => {
+  if (!wordsTopicSelect.contains(e.target)) {
+    wordsTopicSelect.classList.remove('open');
+  }
+  // Also close study topic dropdown if it exists
+  const studyTopicSelect = document.getElementById('studyTopicSelect');
+  if (studyTopicSelect && !studyTopicSelect.contains(e.target)) {
+    studyTopicSelect.classList.remove('open');
+  }
 });
 
 // ============================================
